@@ -109,7 +109,7 @@
 			API::authenticate();
 			$service = new Google_Oauth2Service($GLOBALS['gClient']);
 			$info = $service->userinfo->get();
-			return $info['email'];
+			return $info['id'];
 		}
 	}
 ?>
