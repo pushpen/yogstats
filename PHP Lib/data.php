@@ -1,18 +1,57 @@
 <?php
+	include_once 'user.php';
+	
+	$userSource = new SQLDataSource(DataSource::$sqlLocation, DataSource::$sqlUser, DataSource::$sqlPass);
 	
 	class UserDataHelper
 	{
+		private static $tableName = 'User';
+		private static $columnNames = array('GoogleID', 'Email', 'Hash', 'AuthToken');
+		
 		public static function putNewUser($user)
 		{
-			
+			global $userSource;
+			$userSource->open();
+			$userSource->insert(UserDataHelper::$tableName, UserDataHelper::getAssocArray($user));
 		}
 		public static function getUserByID($userID)
 		{
-			
+			global $userSource;
+			$userSource->open();
+			$result = $userSource->query(UserDataHelper::$tableName, UserDataHelper::$columnNames, 'GoogleID = ' . $userID);
+			return getUserFromRow($result);
 		}
-		public static function getUserByHash($userIDHash)
+		public static function getUserByHash($hash)
 		{
+			global $userSource;
+			$userSource->open();
+			$result = $userSource->query(UserDataHelper::$tableName, UserDataHelper::$columnNames, 'Hash = ' . $hash);
+			return getUserFromRow($result);
+		}
+		public static function updateUser($user)
+		{
+			global $userSource;
+			$userSource->open();
+			$userSource->update(UserDataHelper::$tableName, UserDataHelper::getAssocArray($user), 'GoogleID = ' . $user->getGoogleID());
+		}
+		
+		private static function getUserFromRow($row)
+		{
+			if($row == null) return null;
 			
+			$user = new User($row['GoogleID'], $row['Email'], $row['Hash'], $row['AuthToken']);
+			return $user;
+		}
+		
+		private static function getAssocArray($user)
+		{
+			$retArray = array();
+			$retArray['GoogleID'] = $user->getGoogleID();
+			$retArray['Email'] = $user->getEmail();
+			$retArray['Hash'] = $user->getHash();
+			$retArray['AuthToken'] = $user->getAuthToken();
+			
+			return $retArray;
 		}
 	}
 	
@@ -21,6 +60,7 @@
 	//Interface
 	class DataSource
 	{
+		public static $sqlLocation = 'localhost';
 		protected $location;
 		
 		public function __construct($dataLocation)
@@ -106,7 +146,10 @@
 			return new Exception('This data is read only');
 		}
 		
-		public function insert()
+		public function insert($destination, $fields)
+		{
+			return new Exception('This data is read only');
+		}
 	}
 	
 	class SQLDataSource extends DataSource
@@ -116,6 +159,7 @@
 		private $dbname;
 		private $con;
 		private $result;
+		private $connected;
 		
 		//only called by helper function
 		public function __construct($dataLocation, $username, $password, $databaseName)
@@ -124,26 +168,50 @@
 			$user = $username;
 			$pass = $password;
 			$dbname = $databaseName;
+			$connected = false;
 		}
 		
 		public function open()
 		{
+			if($connected) return true;
+			
 			$con = sqli_connect($location, $user, $pass, $dbname);
 			if(mysqli_connect_errno($con))
 			{
 				throw new Exception(mysqli_connect_error());
 			}
+			
+			$connected = true;
 			return true;
 		}
 		
 		public function close()
 		{
 			mysqli_close($con);
+			$connected = false;
 		}
 		
-		private function keyImplode(
+		private function sqlImplode($seperator, $array)
+		{
+			$first = true;
+			$retStr = '';
+			
+			foreach($kvArray as $value)
+			{
+				if(!$first)
+				{
+					$retStr = $retStr . $seperator;
+				}
+				else
+				{
+					$first = false;
+				}
+				
+				$retStr = $retStr . sqlVarFormat($value);
+			}
+		}
 		
-		private function keyValueImplode($seperator, $kvSeperator, $kvArray)
+		private function sqlKeyImplode($seperator, $kvArray)
 		{
 			$first = true;
 			$retStr = '';
@@ -154,13 +222,42 @@
 				{
 					$retStr = $retStr . $seperator;
 				}
-				else 
+				else
 				{
 					$first = false;
 				}
 				
-				$retStr = $retStr . $key . $kvSeperator . $value;
+				$retStr = $retStr . $key;
 			}
+		}
+		
+		private function sqlKeyValueImplode($seperator, $kvSeperator, $kvArray)
+		{
+			$first = true;
+			$retStr = '';
+			
+			foreach($kvArray as $key => $value)
+			{
+				if(!$first)
+				{
+					$retStr = $retStr . $seperator;
+				}
+				else
+				{
+					$first = false;
+				}
+				
+				$retStr = $retStr . $key . $kvSeperator . sqlValFormat($value);
+			}
+		}
+		
+		private function sqlValFormat($var)
+		{
+			if(is_string($var))
+			{
+				return '"' . $var . '"';
+			}
+			return $var;
 		}
 		
 		//sources should be an array of tables to query
@@ -171,13 +268,13 @@
 			$result = mysqli_query($con, 'SELECT ' . implode(',',$fields) .
 								' FROM ' . implode(',', $sources) . 
 								' WHERE ' . $conditions);
-			mysqli_fetch_array($result);
+			return mysqli_fetch_array($result);
 		}
 		
 		//Returns the next row of the last query
 		public function nextResult()
 		{
-			return mysqli_fetch_row($result);
+			return mysqli_fetch_array($result);
 		}
 		
 		//destination is a string containing the table name to update
@@ -186,8 +283,14 @@
 		public function update($destination, $fields, $conditions)
 		{
 			$mysqli_query($con, 'UPDATE ' . $destination .
-								' SET ' . keyValueImplode(', ', ' = ', $fields) .
-								' WHERE ' . $conditions;
+								' SET ' . sqlKeyValueImplode(', ', ' = ', $fields) .
+								' WHERE ' . $conditions);
+		}
+		
+		public function insert($destination, $fields)
+		{
+			$mysqli_query($con, 'INSERT INTO ' . $destination . ' (' . sqlKeyImplode(', ', $fields) 
+								. ') VALUES (' . sqlImplode(', ', $fields) . ')');
 		}
 	}
 ?>
