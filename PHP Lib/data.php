@@ -118,22 +118,22 @@
 			$lastResult = json_decode($channelList->listChannels($fields['part'],$fields));
 			$lastFields = $fields;
 			
-			if($lastResult->['pageInfo']->['totalResults'] == 0)
+			if($lastResult->{'pageInfo'}->{'totalResults'} == 0)
 			{
 				return null;
 			}
 			
 			$itemPointer++;
-			return $lastResult->['items'][0];
+			return $lastResult->{'items'}[0];
 		}
 		
 		public function nextResult()
 		{
-			if($itemPointer >= $lastResult->['pageInfo']->['totalResults'])
+			if($itemPointer >= $lastResult->{'pageInfo'}->{'totalResults'})
 			{
-				if(isset($lastResult->['nextPageToken']))
+				if(isset($lastResult->{'nextPageToken'}))
 				{
-					$lastFields['pageToken'] = $lastResult->['nextPageToken'];
+					$lastFields['pageToken'] = $lastResult->{'nextPageToken'};
 					return query(array('channels'), $lastFields, '');
 				}
 				else
@@ -142,7 +142,7 @@
 				}
 			}
 			
-			$retRow = $lastResult->['items'][$itemPointer];
+			$retRow = $lastResult->{'items'}[$itemPointer];
 			$itemPointer++;
 			return $retRow;
 		}
