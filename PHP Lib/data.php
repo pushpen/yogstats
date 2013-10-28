@@ -37,7 +37,10 @@
 		
 		private static function getUserFromRow($row)
 		{
-			if($row == null) return null;
+			if($row == null)
+			{
+				return null;
+			}
 			
 			$user = new User($row['GoogleID'], $row['Email'], $row['Hash'], $row['AuthToken']);
 			return $user;
@@ -115,7 +118,10 @@
 			$lastResult = json_decode($channelList->listChannels($fields['part'],$fields));
 			$lastFields = $fields;
 			
-			if($lastResult->['pageInfo']->['totalResults'] == 0) return null;
+			if($lastResult->['pageInfo']->['totalResults'] == 0)
+			{
+				return null;
+			}
 			
 			$itemPointer++;
 			return $lastResult->['items'][0];
@@ -173,7 +179,10 @@
 		
 		public function open()
 		{
-			if($connected) return true;
+			if($connected)
+			{
+				return true;
+			}
 			
 			$con = sqli_connect($location, $user, $pass, $dbname);
 			if(mysqli_connect_errno($con))
