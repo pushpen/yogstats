@@ -90,7 +90,7 @@
 			
 			return true;
 		}
-			
+		
 		public static function createAuthCodeURI($redirectURI, $permissions, $fromUrl)
 		{
 			return 'https://accounts.google.com/o/oauth2/auth?client_id=' . 
