@@ -171,7 +171,6 @@
 		
 		//only called by helper function
 		public function __construct($dataLocation, $username, $password, $databaseName)
-		public function __construct($dataLocation, $username, $password, $databaseName)
 		{
 			parent::__construct($dataLocation);
 			$this->$user = $username;
