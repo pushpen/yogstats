@@ -64,6 +64,8 @@
 	class DataSource
 	{
 		public static $sqlLocation = 'localhost';
+		public static $sqlUser = '';
+		public static $sqlPass = '';
 		protected $location;
 		
 		public function __construct($dataLocation)
