@@ -7,9 +7,9 @@
 	{
 		private static $clientID = '696232355614.apps.googleusercontent.com';
 		private static $clientSecret = '9hPHiYyVKNiMDNXkTNuayD6Q';
-		private static $redirectUri = $serverRoot . '/yogstats/authCode.php';
+		private static $redirectUri = API::$serverRoot . '/yogstats/authCode.php';
 		private static $domain = 'localhost';
-		private static $serverRoot = 'https://' . $domain;
+		private static $serverRoot = 'https://' . API::$domain;
 		public static function hasSession()
 		{
 			return session_id() != '' && isset($_SESSION);
