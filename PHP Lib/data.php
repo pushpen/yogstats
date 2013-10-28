@@ -111,13 +111,13 @@
 				throw new Exception('Conditions not currently supported');
 			}
 			
-			itemPointer = 0;
+			$itemPointer = 0;
 			$lastResult = json_decode($channelList->listChannels($fields['part'],$fields));
 			$lastFields = $fields;
 			
 			if($lastResult->['pageInfo']->['totalResults'] == 0) return null;
 			
-			itemPointer++;
+			$itemPointer++;
 			return $lastResult->['items'][0];
 		}
 		
