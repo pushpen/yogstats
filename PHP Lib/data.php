@@ -68,8 +68,8 @@
 			$location = $dataLocation;
 		}
 		
-		public function open(){};
-		public function close(){};
+		public function open(){}
+		public function close(){}
 		//Returns the first row from the query
 		public function query($sources, $fields, $conditions){}
 		public function update($destination, $fields, $conditions){}
