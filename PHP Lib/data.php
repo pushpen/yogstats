@@ -70,7 +70,7 @@
 		
 		public function __construct($dataLocation)
 		{
-			$location = $dataLocation;
+			$this->location = $dataLocation;
 		}
 		
 		public function open(){}
@@ -96,10 +96,10 @@
 		public function __construct($authenticationToken, $googleAPIClient)
 		{
 			parent::__construct(null);
-			$this->$authToken = $authenticationToken;
-			$this->$googleClient = $googleAPIClient;
-			$this->$youtubeDataAPI = new Google_YouTubeService($this->$googleClient);
-			$this->$channelList = $youtubeDataAPI->channels;
+			$this->authToken = $authenticationToken;
+			$this->googleClient = $googleAPIClient;
+			$this->youtubeDataAPI = new Google_YouTubeService($this->googleClient);
+			$this->channelList = $youtubeDataAPI->channels;
 		}
 		
 		//sources should be an empty array or the singleton 'channels'
@@ -116,27 +116,27 @@
 				throw new Exception('Conditions not currently supported');
 			}
 			
-			$this->$itemPointer = 0;
-			$this->$lastResult = json_decode($this->$channelList->listChannels($fields['part'],$fields));
-			$this->$lastFields = $fields;
+			$this->itemPointer = 0;
+			$this->lastResult = json_decode($this->channelList->listChannels($fields['part'],$fields));
+			$this->lastFields = $fields;
 			
-			if($this->$lastResult->{'pageInfo'}->{'totalResults'} == 0)
+			if($this->lastResult->{'pageInfo'}->{'totalResults'} == 0)
 			{
 				return null;
 			}
 			
-			$this->$itemPointer++;
-			return $this->$lastResult->{'items'}[0];
+			$this->itemPointer++;
+			return $this->lastResult->{'items'}[0];
 		}
 		
 		public function nextResult()
 		{
-			if($this->$itemPointer >= $this->$lastResult->{'pageInfo'}->{'totalResults'})
+			if($this->itemPointer >= $this->lastResult->{'pageInfo'}->{'totalResults'})
 			{
-				if(isset($this->$lastResult->{'nextPageToken'}))
+				if(isset($this->lastResult->{'nextPageToken'}))
 				{
-					$this->$lastFields['pageToken'] = $this->$lastResult->{'nextPageToken'};
-					return query(array('channels'), $this->$lastFields, '');
+					$this->lastFields['pageToken'] = $this->lastResult->{'nextPageToken'};
+					return query(array('channels'), $this->lastFields, '');
 				}
 				else
 				{
@@ -144,8 +144,8 @@
 				}
 			}
 			
-			$retRow = $this->$lastResult->{'items'}[$this->$itemPointer];
-			$this->$itemPointer++;
+			$retRow = $this->lastResult->{'items'}[$this->itemPointer];
+			$this->itemPointer++;
 			return $retRow;
 		}
 		
@@ -173,33 +173,33 @@
 		public function __construct($dataLocation, $username, $password, $databaseName)
 		{
 			parent::__construct($dataLocation);
-			$this->$user = $username;
-			$this->$pass = $password;
-			$this->$dbname = $databaseName;
-			$this->$connected = false;
+			$this->user = $username;
+			$this->pass = $password;
+			$this->dbname = $databaseName;
+			$this->connected = false;
 		}
 		
 		public function open()
 		{
-			if($this->$connected)
+			if($this->connected)
 			{
 				return true;
 			}
 			
-			$this->$con = mysqli_connect($this->$location, $this->$user, $this->$pass, $this->$dbname);
-			if(mysqli_connect_errno($this->$con))
+			$this->con = mysqli_connect($this->location, $this->user, $this->pass, $this->dbname);
+			if(mysqli_connect_errno($this->con))
 			{
 				throw new Exception(mysqli_connect_error());
 			}
 			
-			$this->$connected = true;
+			$this->connected = true;
 			return true;
 		}
 		
 		public function close()
 		{
-			mysqli_close($this->$con);
-			$this->$connected = false;
+			mysqli_close($this->con);
+			$this->connected = false;
 		}
 		
 		private function sqlImplode($seperator, $array)
@@ -276,7 +276,7 @@
 		//conditions should be a string containing the SQL WHERE parameters
 		public function query($sources, $fields, $conditions)
 		{
-			$this->$result = mysqli_query($this->$con, 'SELECT ' . implode(',',$fields) .
+			$this->result = mysqli_query($this->con, 'SELECT ' . implode(',',$fields) .
 								' FROM ' . implode(',', $sources) . 
 								' WHERE ' . $conditions);
 			return mysqli_fetch_array($result);
@@ -285,7 +285,7 @@
 		//Returns the next row of the last query
 		public function nextResult()
 		{
-			return mysqli_fetch_array($this->$result);
+			return mysqli_fetch_array($this->result);
 		}
 		
 		//destination is a string containing the table name to update
@@ -293,14 +293,14 @@
 		//conditions is a string containing the SQL WHERE parameters
 		public function update($destination, $fields, $conditions)
 		{
-			$mysqli_query($this->$con, 'UPDATE ' . $destination .
+			$mysqli_query($this->con, 'UPDATE ' . $destination .
 								' SET ' . sqlKeyValueImplode(', ', ' = ', $fields) .
 								' WHERE ' . $conditions);
 		}
 		
 		public function insert($destination, $fields)
 		{
-			$mysqli_query($this->$con, 'INSERT INTO ' . $destination . ' (' . sqlKeyImplode(', ', $fields) 
+			$mysqli_query($this->con, 'INSERT INTO ' . $destination . ' (' . sqlKeyImplode(', ', $fields) 
 								. ') VALUES (' . sqlImplode(', ', $fields) . ')');
 		}
 	}
