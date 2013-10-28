@@ -186,7 +186,7 @@
 				return true;
 			}
 			
-			$con = sqli_connect($location, $user, $pass, $dbname);
+			$con = mysqli_connect($location, $user, $pass, $dbname);
 			if(mysqli_connect_errno($con))
 			{
 				throw new Exception(mysqli_connect_error());
