@@ -102,6 +102,25 @@
 						$_SESSION['authAccessToken'] = $GLOBALS['gClient']->getAccessToken();
 					}
 					
+				}
+				
+				if(!isset($GLOBALS['gClient']))
+				{
+					$GLOBALS['gClient'] = new Google_Client();
+					$GLOBALS['gClient']->setClientId(API::$clientID);
+					$GLOBALS['gClient']->setClientSecret(API::$clientSecret);
+					$GLOBALS['gClient']->setRedirectUri(API::$redirectUri);
+					$GLOBALS['gClient']->setAccessToken($_SESSION['authAccessToken']);
+				}
+				
+				if(API::needsRefresh())
+				{
+					$GLOBALS['gClient']->refreshToken(json_decode($GLOBALS['gClient']->getAccessToken())->{'refresh_token'});
+					$_SESSION['authAccessToken'] = $GLOBALS['gClient']->getAccessToken();
+				}
+				
+				if(!$userFound)
+				{
 					$userInfo = API::getUserData();
 					$user = UserDataHelper::getUserByID($userInfo['id']);
 					
@@ -118,21 +137,6 @@
 					
 					$_SESSION['authUser'] = $user;
 					setcookie('preUser', $user->getHash(), time() + 60*60*24, '/', $domain, true);
-				}
-				
-				if(!isset($GLOBALS['gClient']))
-				{
-					$GLOBALS['gClient'] = new Google_Client();
-					$GLOBALS['gClient']->setClientId(API::$clientID);
-					$GLOBALS['gClient']->setClientSecret(API::$clientSecret);
-					$GLOBALS['gClient']->setRedirectUri(API::$redirectUri);
-					$GLOBALS['gClient']->setAccessToken($_SESSION['authAccessToken']);
-				}
-				
-				if(API::needsRefresh())
-				{
-					$GLOBALS['gClient']->refreshToken(json_decode($GLOBALS['gClient']->getAccessToken())->{'refresh_token'});
-					$_SESSION['authAccessToken'] = $GLOBALS['gClient']->getAccessToken();
 				}
 			}
 			return true;

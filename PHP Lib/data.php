@@ -1,7 +1,7 @@
 <?php
 	include_once 'user.php';
 	
-	$userSource = new SQLDataSource(DataSource::$sqlLocation, DataSource::$sqlUser, DataSource::$sqlPass);
+	$userSource = new SQLDataSource(DataSource::$sqlLocation, DataSource::$sqlUser, DataSource::$sqlPass, 'User');
 	
 	class UserDataHelper
 	{
@@ -58,7 +58,7 @@
 		}
 	}
 	
-	include_once '..\google-api-php-client\src\contrib\Google_YouTubeService.php';
+	require_once 'google-api-php-client/src/contrib/Google_YouTubeService.php';
 	
 	//Interface
 	class DataSource
