@@ -9,10 +9,10 @@
 		
 		public function __construct($id, $email, $hash, $token)
 		{
-			$GoogleID = $id;
-			$Email = $email;
-			$Hash = $hash;
-			$AuthToken = $token;
+			$this->$GoogleID = $id;
+			$this->$Email = $email;
+			$this->$Hash = $hash;
+			$this->$AuthToken = $token;
 		}
 		
 		public static function CreateFromAuthToken($token, $email, $id)
@@ -23,27 +23,27 @@
 		
 		public function getGoogleID()
 		{
-			return $GoogleID;
+			return $this->$GoogleID;
 		}
 		
 		public function getEmail()
 		{
-			return $Email;
+			return $this->$Email;
 		}
 		
 		public function getHash()
 		{
-			return $Hash;
+			return $this->$Hash;
 		}
 		
 		public function getAuthToken()
 		{
-			return $AuthToken;
+			return $this->$AuthToken;
 		}
 		
 		public function setAuthToken($token)
 		{
-			$AuthToken = $token;
+			$this->$AuthToken = $token;
 		}
 	}
 

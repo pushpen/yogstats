@@ -17,13 +17,13 @@
 		
 		public function __construct($creatorID, $reportID)
 		{
-			$ownerIDs = array();
-			$editIDs = array();
-			$viewIDs = array();
+			$this->$ownerIDs = array();
+			$this->$editIDs = array();
+			$this->$viewIDs = array();
 			
-			$channelIDs = array();
+			$this->$channelIDs = array();
 			
-			$fields = array();
+			$this->$fields = array();
 		}
 	}	
 ?>
