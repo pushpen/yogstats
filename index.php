@@ -5,11 +5,11 @@
 	
 	try
 	{
-		API::authenticate();
+		Auth::authenticate();
 	}
 	catch(Exception $ex)
 	{
-		$error = 'Authentication failed';
+		$error = 'Authentication failed ' . $ex->getMessage();
 	}
 ?>
 <html>
@@ -24,7 +24,7 @@
 	}
 	else
 	{
-		echo API::getEmailAddress();
+		echo Auth::getEmailAddress();
 	}
 ?>
 </body>

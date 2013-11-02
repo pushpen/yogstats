@@ -1,12 +1,12 @@
 <?php
 	include_once 'user.php';
 	
-	$userSource = new SQLDataSource(DataSource::$sqlLocation, DataSource::$sqlUser, DataSource::$sqlPass, 'User');
+	$userSource = new SQLDataSource(DataSource::$sqlLocation, DataSource::$sqlUser, DataSource::$sqlPass, 'Yogstats');
 	
 	class UserDataHelper
 	{
 		private static $tableName = 'User';
-		private static $columnNames = array('GoogleID', 'Email', 'Hash', 'AuthToken');
+		private static $columnNames = array('GoogleID', 'Email', 'Hash', 'AuthToken', 'Permissions');
 		
 		public static function putNewUser($user)
 		{
@@ -18,21 +18,21 @@
 		{
 			global $userSource;
 			$userSource->open();
-			$result = $userSource->query(UserDataHelper::$tableName, UserDataHelper::$columnNames, 'GoogleID = ' . $userID);
-			return getUserFromRow($result);
+			$result = $userSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, 'GoogleID = ' . SQLDataSource::sqlValFormat($userID));
+			return UserDataHelper::getUserFromRow($result);
 		}
 		public static function getUserByHash($hash)
 		{
 			global $userSource;
 			$userSource->open();
-			$result = $userSource->query(UserDataHelper::$tableName, UserDataHelper::$columnNames, 'Hash = ' . $hash);
-			return getUserFromRow($result);
+			$result = $userSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, 'Hash = ' . SQLDataSource::sqlValFormat($hash));
+			return UserDataHelper::getUserFromRow($result);
 		}
 		public static function updateUser($user)
 		{
 			global $userSource;
 			$userSource->open();
-			$userSource->update(UserDataHelper::$tableName, UserDataHelper::getAssocArray($user), 'GoogleID = ' . $user->getGoogleID());
+			$userSource->update(UserDataHelper::$tableName, UserDataHelper::getAssocArray($user), 'GoogleID = ' . SQLDataSource::sqlValFormat($user->getGoogleID()));
 		}
 		
 		private static function getUserFromRow($row)
@@ -42,7 +42,7 @@
 				return null;
 			}
 			
-			$user = new User($row['GoogleID'], $row['Email'], $row['Hash'], $row['AuthToken']);
+			$user = new User($row['GoogleID'], $row['Email'], $row['Hash'], $row['AuthToken'], $row['Permissions']);
 			return $user;
 		}
 		
@@ -53,6 +53,7 @@
 			$retArray['Email'] = $user->getEmail();
 			$retArray['Hash'] = $user->getHash();
 			$retArray['AuthToken'] = $user->getAuthToken();
+			$retArray['Permissions'] = $user->getPermissions();
 			
 			return $retArray;
 		}
@@ -64,7 +65,7 @@
 	class DataSource
 	{
 		public static $sqlLocation = 'localhost';
-		public static $sqlUser = '';
+		public static $sqlUser = 'root';
 		public static $sqlPass = '';
 		protected $location;
 		
@@ -202,12 +203,12 @@
 			$this->connected = false;
 		}
 		
-		private function sqlImplode($seperator, $array)
+		public static function sqlImplode($seperator, $array)
 		{
 			$first = true;
 			$retStr = '';
 			
-			foreach($kvArray as $value)
+			foreach($array as $value)
 			{
 				if(!$first)
 				{
@@ -218,11 +219,13 @@
 					$first = false;
 				}
 				
-				$retStr = $retStr . sqlVarFormat($value);
+				$retStr = $retStr . SQLDataSource::sqlValFormat($value);
 			}
+			
+			return $retStr;
 		}
 		
-		private function sqlKeyImplode($seperator, $kvArray)
+		public static function sqlKeyImplode($seperator, $kvArray)
 		{
 			$first = true;
 			$retStr = '';
@@ -240,9 +243,11 @@
 				
 				$retStr = $retStr . $key;
 			}
+			
+			return $retStr;
 		}
 		
-		private function sqlKeyValueImplode($seperator, $kvSeperator, $kvArray)
+		public static function sqlKeyValueImplode($seperator, $kvSeperator, $kvArray)
 		{
 			$first = true;
 			$retStr = '';
@@ -258,15 +263,29 @@
 					$first = false;
 				}
 				
-				$retStr = $retStr . $key . $kvSeperator . sqlValFormat($value);
+				$retStr = $retStr . $key . $kvSeperator . SQLDataSource::sqlValFormat($value);
 			}
+			
+			return $retStr;
 		}
 		
-		private function sqlValFormat($var)
+		public static function sqlValFormat($var)
 		{
 			if(is_string($var))
 			{
+				$var = str_replace("'", '\'', $var);
+				$var = str_replace('"', '\"', $var);
+				$var = str_replace("\b", '\b', $var);
+				$var = str_replace("\n", '\n', $var);
+				$var = str_replace("\r", '\r', $var);
+				$var = str_replace("\t", '\t', $var);
+				$var = str_replace('%', '\%', $var);
+				$var = str_replace('_', '\_', $var);
 				return '"' . $var . '"';
+			}
+			if(is_float($var))
+			{
+				$var = number_format($var,0,'.','');
 			}
 			return $var;
 		}
@@ -276,10 +295,13 @@
 		//conditions should be a string containing the SQL WHERE parameters
 		public function query($sources, $fields, $conditions)
 		{
-			$this->result = mysqli_query($this->con, 'SELECT ' . implode(',',$fields) .
+			$query = 'SELECT ' . implode(',',$fields) .
 								' FROM ' . implode(',', $sources) . 
-								' WHERE ' . $conditions);
-			return mysqli_fetch_array($result);
+								' WHERE ' . $conditions;
+			//echo $query . '<br>';
+			$this->result = mysqli_query($this->con, $query);
+			if(!$this->result) throw new Exception('Query threw exception: ' . mysqli_error($this->con));
+			return mysqli_fetch_array($this->result);
 		}
 		
 		//Returns the next row of the last query
@@ -293,15 +315,21 @@
 		//conditions is a string containing the SQL WHERE parameters
 		public function update($destination, $fields, $conditions)
 		{
-			$mysqli_query($this->con, 'UPDATE ' . $destination .
-								' SET ' . sqlKeyValueImplode(', ', ' = ', $fields) .
-								' WHERE ' . $conditions);
+			$query = 'UPDATE ' . $destination .
+								' SET ' . SQLDataSource::sqlKeyValueImplode(', ', ' = ', $fields) .
+								' WHERE ' . $conditions;
+			//echo $query . '<br>';
+			$qResult = mysqli_query($this->con, $query);
+			if(!$qResult) throw new Exception('Insert threw exception: ' . mysqli_error($this->con));
 		}
 		
 		public function insert($destination, $fields)
 		{
-			$mysqli_query($this->con, 'INSERT INTO ' . $destination . ' (' . sqlKeyImplode(', ', $fields) 
-								. ') VALUES (' . sqlImplode(', ', $fields) . ')');
+			$query = 'INSERT INTO ' . $destination . ' (' . SQLDataSource::sqlKeyImplode(', ', $fields) 
+								. ') VALUES (' . SQLDataSource::sqlImplode(', ', $fields) . ')';
+			//echo $query . '<br>';
+			$qResult = mysqli_query($this->con, $query);
+			if(!$qResult) throw new Exception('Insert threw exception: ' . mysqli_error($this->con));
 		}
 	}
 ?>

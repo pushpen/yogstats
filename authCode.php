@@ -1,7 +1,7 @@
 <?php
 	require_once 'PHP Lib/api.php';
 	
-	API::startSession();
+	Auth::startSession();
 	
 	function splitQueryParameters($query)
 	{
@@ -31,9 +31,10 @@
 	else if(!isset($_GET['error']) && isset($_GET['code']))
 	{
 		$_SESSION['authCode'] = $_GET['code'];
+		$error = Auth::authenticate();
 		try
 		{
-			$error = API::authenticate();
+			
 		}
 		catch(Exception $ex)
 		{
