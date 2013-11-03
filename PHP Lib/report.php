@@ -1,8 +1,15 @@
 <?php
+	/*require_once 'reportPermission.php';
+	require_once 'reportChannel.php';
+	require_once 'reportStatistic.php';
+	*/require_once 'statistic.php';
+	
 	class Report
 	{
-		private $creatorID;
 		private $reportID;
+		private $creatorID;
+		private $display;
+		private $hasSum;
 		
 		//Access Lists
 		private $ownerIDs;
@@ -25,5 +32,7 @@
 			
 			$this->fields = array();
 		}
-	}	
+	}
+	
+	
 ?>
