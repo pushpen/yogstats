@@ -24,7 +24,12 @@
 	}
 	else
 	{
-		echo Auth::getEmailAddress();
+		$stats = StatisticDataHelper::getStatistics();
+		foreach($stats as $value)
+		{
+			var_dump($value);
+			echo '<br>';
+		}
 	}
 ?>
 </body>
