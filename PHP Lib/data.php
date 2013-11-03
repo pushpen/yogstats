@@ -1,72 +1,12 @@
 <?php
-	include_once 'user.php';
-	
-	$userSource = new SQLDataSource(DataSource::$sqlLocation, DataSource::$sqlUser, DataSource::$sqlPass, 'Yogstats');
-	
-	class UserDataHelper
-	{
-		private static $tableName = 'User';
-		private static $columnNames = array('GoogleID', 'Email', 'Hash', 'AuthToken', 'Permissions');
-		
-		public static function putNewUser($user)
-		{
-			global $userSource;
-			$userSource->open();
-			$userSource->insert(UserDataHelper::$tableName, UserDataHelper::getAssocArray($user));
-		}
-		public static function getUserByID($userID)
-		{
-			global $userSource;
-			$userSource->open();
-			$result = $userSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, 'GoogleID = ' . SQLDataSource::sqlValFormat($userID));
-			return UserDataHelper::getUserFromRow($result);
-		}
-		public static function getUserByHash($hash)
-		{
-			global $userSource;
-			$userSource->open();
-			$result = $userSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, 'Hash = ' . SQLDataSource::sqlValFormat($hash));
-			return UserDataHelper::getUserFromRow($result);
-		}
-		public static function updateUser($user)
-		{
-			global $userSource;
-			$userSource->open();
-			$userSource->update(UserDataHelper::$tableName, UserDataHelper::getAssocArray($user), 'GoogleID = ' . SQLDataSource::sqlValFormat($user->getGoogleID()));
-		}
-		
-		private static function getUserFromRow($row)
-		{
-			if($row == null)
-			{
-				return null;
-			}
-			
-			$user = new User($row['GoogleID'], $row['Email'], $row['Hash'], $row['AuthToken'], $row['Permissions']);
-			return $user;
-		}
-		
-		private static function getAssocArray($user)
-		{
-			$retArray = array();
-			$retArray['GoogleID'] = $user->getGoogleID();
-			$retArray['Email'] = $user->getEmail();
-			$retArray['Hash'] = $user->getHash();
-			$retArray['AuthToken'] = $user->getAuthToken();
-			$retArray['Permissions'] = $user->getPermissions();
-			
-			return $retArray;
-		}
-	}
-	
 	require_once 'google-api-php-client/src/contrib/Google_YouTubeService.php';
 	
 	//Interface
 	class DataSource
 	{
 		public static $sqlLocation = 'localhost';
-		public static $sqlUser = 'root';
-		public static $sqlPass = '';
+		public static $sqlUser = 'yogAdmin';
+		public static $sqlPass = 'EuRMd8EWDLAB';
 		protected $location;
 		
 		public function __construct($dataLocation)
@@ -82,25 +22,21 @@
 		public function insert($destination, $fields) {}
 		//Returns the next row from the last query or NULL if none is available
 		public function nextResult(){}
+		public function sanitise($string){}
 	}
+	
+	$ytDataSource = new YoutubeDataAPIDataSource();
 	
 	class YoutubeDataAPIDataSource extends DataSource
 	{
-		private $authToken;
-		private $googleClient;
-		private $youtubeDataAPI;
-		private $channelList;
 		private $lastResult;
 		private $lastFields;
 		private $itemPointer = 0;
+		private static $apiKey = 'AIzaSyDwWbRNMAvyEzc7kAEn40YEPtbjM_aXVOk';
 		
-		public function __construct($authenticationToken, $googleAPIClient)
+		public function __construct()
 		{
 			parent::__construct(null);
-			$this->authToken = $authenticationToken;
-			$this->googleClient = $googleAPIClient;
-			$this->youtubeDataAPI = new Google_YouTubeService($this->googleClient);
-			$this->channelList = $youtubeDataAPI->channels;
 		}
 		
 		//sources should be an empty array or the singleton 'channels'
@@ -118,7 +54,7 @@
 			}
 			
 			$this->itemPointer = 0;
-			$this->lastResult = json_decode($this->channelList->listChannels($fields['part'],$fields));
+			$this->lastResult = $this->listChannels($fields);
 			$this->lastFields = $fields;
 			
 			if($this->lastResult->{'pageInfo'}->{'totalResults'} == 0)
@@ -128,6 +64,40 @@
 			
 			$this->itemPointer++;
 			return $this->lastResult->{'items'}[0];
+		}
+		
+		private function listChannels($fields)
+		{
+			$url =  'https://www.googleapis.com/youtube/v3/channels';
+			$seperator = '?';
+			
+			$fields['key'] = YoutubeDataAPIDataSource::$apiKey;
+			
+			foreach($fields as $key => $value)
+			{
+				$url .= $seperator;
+				$url .= $key . '=' . urlencode($value);
+				$seperator = '&';
+			}
+			
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			
+			$response = curl_exec($ch);
+			
+			if(curl_errno($ch)) 
+			{
+				throw new Exception('Youtube Data API threw exception: ' . curl_error($ch));
+			}
+			curl_close($ch);
+			
+			$response = json_decode($response);
+			if(isset($response->{'error'}))
+			{
+				throw new Exception ('Youtube Data API threw exception: ' . $response->{'error'}->{'message'});
+			}
+			return $response;
 		}
 		
 		public function nextResult()
@@ -159,7 +129,15 @@
 		{
 			return new Exception('This data is read only');
 		}
+		
+		public function sanitise($string)
+		{
+			return $string;
+		}
 	}
+	
+	$sqlSource = new SQLDataSource(DataSource::$sqlLocation, DataSource::$sqlUser, DataSource::$sqlPass, 'Yogstats');
+	$sqlSource->open();
 	
 	class SQLDataSource extends DataSource
 	{
@@ -287,6 +265,10 @@
 			{
 				$var = number_format($var,0,'.','');
 			}
+			if($var === null)
+			{
+				$var = 'NULL';
+			}
 			return $var;
 		}
 		
@@ -320,7 +302,7 @@
 								' WHERE ' . $conditions;
 			//echo $query . '<br>';
 			$qResult = mysqli_query($this->con, $query);
-			if(!$qResult) throw new Exception('Insert threw exception: ' . mysqli_error($this->con));
+			if(!$qResult) throw new Exception('Update threw exception: ' . mysqli_error($this->con));
 		}
 		
 		public function insert($destination, $fields)
@@ -330,6 +312,11 @@
 			//echo $query . '<br>';
 			$qResult = mysqli_query($this->con, $query);
 			if(!$qResult) throw new Exception('Insert threw exception: ' . mysqli_error($this->con));
+		}
+		
+		public function sanitise($string)
+		{
+			return mysqli_real_escape_string($this->con, $string);
 		}
 	}
 ?>
