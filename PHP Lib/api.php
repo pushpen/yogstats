@@ -2,6 +2,21 @@
 	require_once 'google-api-php-client/src/Google_Client.php';
 	require_once 'google-api-php-client/src/contrib/Google_Oauth2Service.php';
 	require_once 'data.php';
+	require_once 'user.php';
+	require_once 'trackedChannel.php';
+	require_once 'report.php';
+	
+	class Util
+	{
+		public static function getUser()
+		{
+			if(!Auth::hasUser())
+			{
+				return null;
+			}
+			return $_SESSION['authUser'];
+		}
+	}
 	
 	class Auth
 	{
@@ -58,7 +73,8 @@
 				$userFound = false;
 				if(isset($_COOKIE['preUser']))
 				{
-					$user = UserDataHelper::getUserByHash($_COOKIE['preUser']);
+					global $sqlSource;
+					$user = UserDataHelper::getUserByHash($sqlSource->sanitise($_COOKIE['preUser']));
 					
 					if($user != null)
 					{
