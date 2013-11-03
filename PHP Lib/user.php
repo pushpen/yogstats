@@ -77,4 +77,58 @@
 		}
 	}
 
+	class UserDataHelper
+	{
+		private static $tableName = 'User';
+		private static $columnNames = array('GoogleID', 'Email', 'Hash', 'AuthToken', 'Permissions');
+		
+		public static function putNewUser($user)
+		{
+			global $sqlSource;
+			$sqlSource->open();
+			$sqlSource->insert(UserDataHelper::$tableName, UserDataHelper::getAssocArray($user));
+		}
+		public static function getUserByID($userID)
+		{
+			global $sqlSource;
+			$sqlSource->open();
+			$result = $sqlSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, 'GoogleID = ' . SQLDataSource::sqlValFormat($userID));
+			return UserDataHelper::getUserFromRow($result);
+		}
+		public static function getUserByHash($hash)
+		{
+			global $sqlSource;
+			$sqlSource->open();
+			$result = $sqlSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, 'Hash = ' . SQLDataSource::sqlValFormat($hash));
+			return UserDataHelper::getUserFromRow($result);
+		}
+		public static function updateUser($user)
+		{
+			global $sqlSource;
+			$sqlSource->open();
+			$sqlSource->update(UserDataHelper::$tableName, UserDataHelper::getAssocArray($user), 'GoogleID = ' . SQLDataSource::sqlValFormat($user->getGoogleID()));
+		}
+		
+		private static function getUserFromRow($row)
+		{
+			if($row == null)
+			{
+				return null;
+			}
+			$user = new User($row['GoogleID'], $row['Email'], $row['Hash'], $row['AuthToken'], $row['Permissions']);
+			return $user;
+		}
+		
+		private static function getAssocArray($user)
+		{
+			$retArray = array();
+			$retArray['GoogleID'] = $user->getGoogleID();
+			$retArray['Email'] = $user->getEmail();
+			$retArray['Hash'] = $user->getHash();
+			$retArray['AuthToken'] = $user->getAuthToken();
+			$retArray['Permissions'] = $user->getPermissions();
+			
+			return $retArray;
+		}
+	}
 ?>
