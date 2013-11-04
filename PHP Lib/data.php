@@ -1,5 +1,6 @@
 <?php
 	require_once 'google-api-php-client/src/contrib/Google_YouTubeService.php';
+	require_once 'PHP Lib/config.php';
 	
 	//Interface
 	abstract class DataSource
@@ -29,7 +30,6 @@
 		private $lastResult;
 		private $lastFields;
 		private $itemPointer = 0;
-		private static $apiKey = 'AIzaSyDwWbRNMAvyEzc7kAEn40YEPtbjM_aXVOk';
 		
 		public function __construct()
 		{
@@ -51,6 +51,7 @@
 			}
 			
 			$this->itemPointer = 0;
+			
 			$this->lastResult = $this->listChannels($fields);
 			$this->lastFields = $fields;
 			
@@ -68,7 +69,7 @@
 			$url =  'https://www.googleapis.com/youtube/v3/channels';
 			$seperator = '?';
 			
-			$fields['key'] = YoutubeDataAPIDataSource::$apiKey;
+			$fields['key'] = YTConfig::$ApiKey;
 			
 			foreach($fields as $key => $value)
 			{
@@ -77,6 +78,7 @@
 				$seperator = '&';
 			}
 			
+			//echo $url . '<br>';
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -133,7 +135,7 @@
 		}
 	}
 	
-	$sqlSource = new SQLDataSource(SQLConfig::$sqlLocation, SQLConfig::$sqlUser, SQLConfig::$sqlPass, 'Yogstats');
+	$sqlSource = new SQLDataSource(SQLConfig::$SqlLocation, SQLConfig::$SqlUser, SQLConfig::$SqlPass, SQLConfig::$DBName);
 	$sqlSource->open();
 	
 	class SQLDataSource extends DataSource
@@ -244,7 +246,7 @@
 			return $retStr;
 		}
 		
-		public static function sqlValFormat($var)
+		public static function sqlValFormat($var, $patternMatched = false)
 		{
 			if(is_string($var))
 			{
@@ -254,8 +256,11 @@
 				$var = str_replace("\n", '\n', $var);
 				$var = str_replace("\r", '\r', $var);
 				$var = str_replace("\t", '\t', $var);
-				$var = str_replace('%', '\%', $var);
-				$var = str_replace('_', '\_', $var);
+				if($patternMatched)
+				{
+					$var = str_replace('%', '\%', $var);
+					$var = str_replace('_', '\_', $var);
+				}
 				return '"' . $var . '"';
 			}
 			if(is_float($var))
