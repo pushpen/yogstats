@@ -36,14 +36,159 @@
 			return new Report(-1, $creatorID, $display, $hasSum);
 		}
 		
+		public function getReportData($headerRow = true)
+		{
+			$data = array();
+			$this->getChannels();
+			$this->getStatistics();
+			
+			$resolvedStats = array();
+			$resolvedChannels = array();
+			
+			foreach($this->statistics as $statistic)
+			{
+				$resolvedStats[] = StatisticDataHelper::getStatisticByID($statistic->getStatisticID());
+			}
+			
+			foreach($this->channels as $channel)
+			{
+				$resolvedChannels[] = TrackedChannelDataHelper::getTrackedChannelByID($channel->getTrackedID());
+			}
+			
+			$tableHeader = null;
+			
+			if($headerRow)
+			{
+				$headerNames = array();
+				
+				foreach($resolvedStats as $statistic)
+				{
+					$headerNames[] = $statistic->getStatisticName();
+				}
+				
+				$tableHeader = new ReportDataRow('Channel Name', $headerNames);
+			}
+			global $ytDataSource;
+			$querySources = array($ytDataSource);
+			$queryFields = $this->constructQueryFields($resolvedStats);
+			
+			foreach($resolvedChannels as $channel)
+			{
+				$queryResults = $this->executeQueries($queryFields, $querySources, array(array('channels')), array(array('id' => $channel->getChannelID())));	
+				$values = $this->fetchValues($resolvedStats, $queryResults);
+				$data[] = new ReportDataRow($channel->getChannelName(), $values);
+			}
+			
+			$sum = null;
+			
+			if($this->hasSum)
+			{
+				$values = array();
+				
+				foreach($data as $row)
+				{
+					for($i = 0; $i < sizeof($row->getRowValues()); $i++)
+					{
+						if(is_numeric($row->getRowValues()[$i]))
+						{
+							if(!isset($values[$i]))
+							{
+								$values[$i] = 0;
+							}
+							$values[$i] += $row->getRowValues()[$i];
+						}	
+						else
+						{
+							$values[$i] = '';
+						}
+					}
+				}
+				
+				$sum = new ReportDataRow('Sum', $values);
+			}
+			
+			return new ReportData($tableHeader, $data, $sum);
+		}
+		
+		private function constructQueryFields($statistics)
+		{
+			$fields = array();
+			
+			foreach($statistics as $statistic)
+			{
+				if(!isset($fields[$statistic->getAPISource()]))
+				{
+					$fields[$statistic->getAPISource()] = array();
+				}
+				if(!isset($fields[$statistic->getAPISource()][$statistic->getFieldName()]))
+				{
+					$fields[$statistic->getAPISource()][$statistic->getFieldName()] = array();
+				}
+				
+				$fields[$statistic->getAPISource()][$statistic->getFieldName()][$statistic->getFieldValue()] = true;
+			}
+			
+			foreach($fields as $sourceKey => $queryFields)
+			{
+				foreach($queryFields as $fKey => $fieldValueArray)
+				{
+					$fieldValueString = '';
+					$seperator = '';
+					foreach($fieldValueArray as $key => $value)
+					{
+						$fieldValueString .= $seperator . $key;
+						$seperator = ',';
+					}
+					
+					$fields[$sourceKey][$fKey] = $fieldValueString;
+				}
+			}
+			
+			return $fields;
+		}
+		
+		private function executeQueries($fields, $sources, $sourceNames, $channelFields)
+		{
+			$queryResults = array();
+			
+			foreach($fields as $source => $queryFields)
+			{
+				foreach($channelFields[$source] as $key => $value)
+				{
+					$queryFields[$key] = $value;
+				}
+				$queryResults[$source] = $sources[$source]->query($sourceNames[$source], $queryFields, '');
+			}
+			
+			return $queryResults;
+		}
+		
+		private function fetchValues($statistics, $results)
+		{
+			$values = array();
+			$i = 0;
+			
+			foreach($statistics as $statistic)
+			{
+				$values[$i] = $statistic->getData($results[$statistic->getAPISource()]);
+				$i++;
+			}
+			return $values;
+		}
+		
 		public function getReportID()
 		{
 			return $this->reportID;
 		}
 		
+		public function setReportID($reportID)
+		{
+			$this->reportID = $reportID;
+		}
+		
 		public function getCreatorID()
 		{
-			return $this->creatorID:
+			return $this->creatorID;
 		}
 		
 		public function getDisplay()
@@ -54,6 +199,75 @@
 		public function getHasSum()
 		{
 			return $this->hasSum;
+		}
+		
+		public function getChannels()
+		{
+			if($this->channels === null)
+			{
+				$this->channels = ReportChannelDataHelper::getReportChannels($this->reportID);
+			}
+			return $this->channels;
+		}
+		
+		public function getStatistics()
+		{
+			if($this->statistics === null)
+			{
+				$this->statistics = ReportStatisticDataHelper::getReportStatistics($this->reportID);
+			}
+			return $this->statistics;
+		}
+	}
+	
+	class ReportData
+	{
+		private $header;
+		private $data;
+		private $sum;
+		
+		public function __construct($header, $data, $sum)
+		{
+			$this->header = $header;
+			$this->data = $data;
+			$this->sum = $sum;
+		}
+		
+		public function getHeader()
+		{
+			return $this->header;
+		}
+		
+		public function getData()
+		{
+			return $this->data;
+		}
+		
+		public function getSum()
+		{
+			return $this->sum;
+		}
+	}
+	
+	class ReportDataRow
+	{
+		private $rowName;
+		private $rowValues;
+		
+		public function __construct($rowName, $rowValues)
+		{
+			$this->rowName = $rowName;
+			$this->rowValues = $rowValues;
+		}
+		
+		public function getRowName()
+		{
+			return $this->rowName;
+		}
+		
+		public function getRowValues()
+		{
+			return $this->rowValues;
 		}
 	}
 	
@@ -78,6 +292,7 @@
 		public static function putNewReport($report, $permissions, $channels, $statistics)
 		{
 			$reportID = ReportDataHelper::insertReport($report);
+			$report->setReportID($reportID);
 			if($reportID == 0)
 			{
 				throw new Exception('Report not created');
@@ -121,6 +336,17 @@
 			return $reports;
 		}
 		
+		private static function addTableNameToColumns($columns, $tableName)
+		{
+			$retArray = array();
+			foreach($columns as $column)
+			{
+				$retArray[] = $tableName . '.' . $column;
+			}
+			
+			return $retArray;
+		}
+		
 		public static function getVisibleReports($user)
 		{
 			if($user->canView())
@@ -133,15 +359,30 @@
 				$reports = array();
 				$rTbl = ReportDataHelper::$tableName;
 				$rPTbl = ReportPermissionDataHelper::getTableName();
-				$row = $sqlSource->query(array($rTbl, $rPTbl), ReportDataHelper::$columnNames, $rTbl . '.ReportID = ' . $rPTbl . '.ReportID AND (' . $rPTbl . '.GoogleID = ' . $user->getGoogleID() . ' OR ' . $rTbl . '.CreatorID = ' . $user->getGoogleID() .  ') AND ' . $rPTbl . '.Permissions & 1 = 1'); 
+				$row = $sqlSource->query(array($rTbl, $rPTbl), ReportDataHelper::addTableNameToColumns(ReportDataHelper::$columnNames, ReportDataHelper::$tableName), '(' . $rTbl . '.ReportID = ' . $rPTbl . '.ReportID AND ' . $rPTbl . '.GoogleID = ' . SQLDataSource::sqlValFormat($user->getGoogleID()) .  ' AND (' . $rPTbl . '.Permissions & 1 = 1))'); 
 				
 				while($row != null)
 				{
-					$reports[] = ReportDataHelper::getReportFromRow($row);
+					$reports[$row['ReportID']] = ReportDataHelper::getReportFromRow($row);
 					$row = $sqlSource->nextResult();
 				}
 				
-				return $row;
+				$row = $sqlSource->query(array($rTbl), ReportDataHelper::$columnNames, 'CreatorID = ' . SQLDataSource::sqlValFormat($user->getGoogleID()));
+				
+				while($row != null)
+				{
+					$reports[$row['ReportID']] = ReportDataHelper::getReportFromRow($row);
+					$row = $sqlSource->nextResult();
+				}
+				
+				$retReports = array();
+				
+				foreach($reports as $key => $value)
+				{
+					$retReports[] = $value;
+				}
+				
+				return $retReports;
 			}
 		}
 		
