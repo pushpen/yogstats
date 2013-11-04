@@ -18,6 +18,19 @@
 			$this->APISource = $APISource;
 		}
 		
+		public function getData($response)
+		{
+			$retObj = $response;
+			$dotArray = explode('.', $this->responseLocation);
+			
+			for(int i =0; i < sizeof($dotArray); i++)
+			{
+				$retObj = $retObj->{$dotArray[i]};
+			}
+
+			return $retObj;
+		}
+		
 		public function getStatisticID()
 		{
 			return $this->statisticID;
@@ -57,12 +70,16 @@
 		public static function getStatisticFromID($id)
 		{
 			global $sqlSource;
-			$row = $sqlSource->query(array(StatisticDataHelper::$tableName), StatisticDataHelper::$columnNames, 'WHERE StatisticID = ' . $id);
+			$row = $sqlSource->query(array(StatisticDataHelper::$tableName), StatisticDataHelper::$columnNames, 'StatisticID = ' . $id);
 			return getStatisticFromRow($row);
 		}
 		
 		public static function getStatisticFromRow($row)
 		{
+			if($row == null)
+			{
+				return null;
+			}
 			return new Statistic($row['StatisticID'], $row['StatisticName'], $row['FieldName'], $row['FieldValue'], $row['ResponseLocation'], $row['APISource']);
 		}
 		
