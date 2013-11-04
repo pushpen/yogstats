@@ -23,9 +23,9 @@
 			$retObj = $response;
 			$dotArray = explode('.', $this->responseLocation);
 			
-			for(int i =0; i < sizeof($dotArray); i++)
+			for($i =0; $i < sizeof($dotArray); $i++)
 			{
-				$retObj = $retObj->{$dotArray[i]};
+				$retObj = $retObj->{$dotArray[$i]};
 			}
 
 			return $retObj;
@@ -67,11 +67,11 @@
 		private static $tableName = 'Statistic';
 		private static $columnNames = array('StatisticID', 'StatisticName', 'FieldName', 'FieldValue', 'ResponseLocation', 'APISource');
 	
-		public static function getStatisticFromID($id)
+		public static function getStatisticByID($id)
 		{
 			global $sqlSource;
 			$row = $sqlSource->query(array(StatisticDataHelper::$tableName), StatisticDataHelper::$columnNames, 'StatisticID = ' . $id);
-			return getStatisticFromRow($row);
+			return StatisticDataHelper::getStatisticFromRow($row);
 		}
 		
 		public static function getStatisticFromRow($row)
