@@ -65,7 +65,7 @@
 		public static function getTrackedChannelByID($id)
 		{
 			global $sqlSource;
-			$row = $sqlSource->query(array(TrackedChannelDataHelper::$tableName), TrackedChannelDataHelper::$columnNames, 'WHERE TrackedID = ' . SQLDataSource::sqlValFormat($id));
+			$row = $sqlSource->query(array(TrackedChannelDataHelper::$tableName), TrackedChannelDataHelper::$columnNames, 'TrackedID = ' . SQLDataSource::sqlValFormat($id));
 			return TrackedChannelDataHelper::getTrackedChannelFromRow($row);
 		}
 		
@@ -86,6 +86,10 @@
 		
 		private static function getTrackedChannelFromRow($row)
 		{
+			if($row == null)
+			{
+				return null;
+			}
 			return new TrackedChannel($row['TrackedID'], $row['ChannelID'], $row['ChannelName'], $row['AuthToken']);
 		}
 		
