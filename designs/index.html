@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Yogstats Beta</title>
+		<link rel="stylesheet" href="css/style.css" />
+		<!--- scripts here eventually when we need them, namely: jQuery, Google Visualization Plugin, etc. -->
+		<script type="text/javascript" src="//use.typekit.net/pqg7zey.js"></script>
+		<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+	</head>
+	<body>
+		<header>
+			<h1>Yogstats</h1>
+			<nav>
+				<ul>
+					<li><a href="#">Reports</a></li>
+					<li><a href="#">Channel Manager</a></li>
+					<li><a href="#">Self-destruct Button</a></li>
+					<li class="logout"><a href="#">Log Out</a></li>
+				</ul>
+			<nav>
+		</header>
+		<aside>
+			<h2>Reports</h2>
+			<ul>
+				<li><a href="#">Dashboard</a></li>
+				<li>Individual views:
+					<ul>
+						<li><a href="#">bluexephos</a></li>
+						<li><a href="#">yogscast2</a></li>
+						<li><a href="#">yogscastsips</a></li>
+						<li><a href="#">yogscastlalna</a></li>
+						<li><a href="#">yogscastsjin</a></li>
+						<li><a href="#">yogscastrythian</a></li>
+						<li>...</li>
+					</ul>
+				</li>
+				<li class="button"><a href="#">Add a report</a></li>
+			</ul> 
+		</aside>
+		<main>
+			<h2>Dashboard</h2>
+			<section class="summary">
+				Across all channels, Yogscast has accumulated...
+				<div class="readout">
+					<div class="left">
+						<div class="value">10,000,000</div>
+						<div class="key">subscribers</div>
+					</div>
+					<div class="right">
+						<div class="value">2,356,3454,453</div>
+						<div class="key">views</div>
+					</div>
+				</div>
+			</section>
+			<section class="reports">
+				To view data pertaining to each channel specifically, choose a channel name from the column down the left side of the page.
+			</section>
+			<div style="clear:both"></div>
+			<section class="add chanel">
+				<h2>Add a channel</h2>
+				<p>Add a channel here to have it's statistics be included in future reports.</p>
+				<form>
+					<label for="f-name">YouTube Name:</label>
+					<input type="text" id="f-name" />
+					<div class="help-text"><strong>Without</strong> http://youtube.com/</div>
+					<input type="button" value="Add channel" />
+				</form>
+			</section>
+			<div style="clear:both"></div>
+			<section class="edit chanel">
+				<h2>Channel Manager</h2>
+				<p>Click a channel's button to have it be removed from future reports.</p>
+				<table>
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Auth status<br/>(<abbr title="Channels must authenticate with our application to be included in advanced reports and graphs. If they do not authenticate, their Views and Subscribers will still be shown, but advanced reports may not be accurate.">what does this mean?</abbr>)</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>bluexephos</td>
+							<td>Yes</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+						<tr>
+							<td>yogscast2</td>
+							<td>Yes</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+						<tr>
+							<td>yogscastsips</td>
+							<td>Yes</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+						<tr>
+							<td>yogscastlalna</td>
+							<td>Yes</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+						<tr>
+							<td>yogscastsjin</td>
+							<td>No</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+						<tr>
+							<td>yogscastrythian</td>
+							<td>No</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+						<tr>
+							<td>haatfilms</td>
+							<td>Yes</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+						<tr>
+							<td>yogscastkim</td>
+							<td>Yes</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+						<tr>
+							<td>thestrippin</td>
+							<td>No</td>
+							<td><button>Remove</buttom></td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</main>
+		<footer>
+			Built by <a href="#">Tom</a> and <a href="#">Ed</a>
+		</footer>
+	</body>
+</html>

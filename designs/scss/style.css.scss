@@ -1,0 +1,262 @@
+$header-height: 80px;
+$yg-blue: #0f254f;
+
+%clearfix {
+    &:after {
+        content: " ";
+        display: block;
+        clear: both;
+    }
+}
+
+*,
+::before,
+::after {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+body {
+	font: normal 16px/1.35 "proxima-nova";
+	color: #222222;
+	margin: 0;
+}
+
+abbr {
+	font-weight: normal;
+	border-bottom: 1px dotted #ccc;
+}
+
+input,
+button {
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	border: none;
+}
+
+a {
+	color: lighten($yg-blue,35%);
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+h1, h2, h3, h4, strong, th {
+	margin-top: 0;
+	font-weight: 600;
+}
+
+header {
+	position: fixed;
+	z-index: 2;
+	top: 0;
+	left: 0;
+	width: 100%;
+	padding: 20px;
+	background: -webkit-linear-gradient(top, $yg-blue 0%, lighten($yg-blue, 10%) 100%);
+	color: #fff;
+	text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+	box-shadow: 0 0 10px rgba(0,0,0,0.4);
+	@extend %clearfix;
+
+	h1 {
+		float: left;
+		margin: 0;
+	}
+
+	nav {
+		float: right;
+	}
+
+	nav ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		@extend %clearfix;
+
+		li {
+			display: block;
+			float: left;
+			line-height: 40px;
+			margin-left: 25px;
+
+			a {
+				color: #fff;
+			}
+
+			&.logout {
+				line-height: 20px;
+				padding: 10px 14px;
+				background: rgba(255,255,255,0.2);
+				border-radius: 5px;
+			}
+		}
+	}
+}
+
+aside {
+	position: fixed;
+	z-index: 1;
+	top: $header-height;
+	left: 0;
+	width: 25%;
+	padding: 20px;
+	border-right: 1px solid #ededed;
+	min-height: 100%;
+
+	&>ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;	
+	}
+
+	li {
+		margin-top: 12px;
+	}
+}
+
+main {
+	margin-left: 25%;
+	margin-top: $header-height;
+	padding: 20px;
+
+	section {
+		margin-bottom: 20px;
+		@extend %clearfix;
+
+		&.summary {
+			float: left;
+			width: 46%;
+			.readout {
+				margin-top: 10px;
+				width: 100%;
+				border: 1px solid #dadada;
+				border-radius: 5px;
+				@extend %clearfix;
+
+				.left, .right {
+					float: left;
+					width: 50%;
+					padding: 15px;
+				}
+
+				.right {
+					border-left: 1px solid #dadada;
+				}
+
+				.key, .value {
+					text-align: center;
+				}
+
+				.value {
+					font-size: 1.4em;
+				}
+
+				.key {
+					font-weight: 700;
+				}
+			}
+		}
+
+		&.reports {
+			float: right;
+			width: 46%;
+			background: lighten($yg-blue, 75%);
+			padding: 15px;
+			border: 1px solid lighten($yg-blue, 65%);
+		}
+	}
+
+	form {
+		.help-text {
+			color: #656565;
+		}
+
+		input[type="text"],
+		label,
+		.help-text {
+			margin: 0 0 0 40px;
+		}
+
+		label {
+			margin-right: 10px;
+		}
+
+		input[type="text"] {
+			line-height: 1;
+			margin-left: 0;
+			padding: 5px;
+			border: 1px solid lighten($yg-blue, 50%);
+			font-family: inherit;
+			font-size: inherit;
+			border-radius: 3px;
+			width: 30%;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1) inset;
+		}
+
+		input[type="button"] {
+			padding: 15px 30px;
+			line-height: 1;
+			margin: 0.833em 0 0 0;
+			background: -webkit-linear-gradient(top, lighten($yg-blue, 15%) 0%, lighten($yg-blue, 5%) 100%);
+			color: #fff;
+			font-size: inherit;
+			font-family: inherit;
+			border: none;
+			border-radius: 5px;
+			text-shadow: 0 0 1px black;
+			box-shadow: 0 1px 1px rgba(255,255,255,0.33) inset;
+
+			&:hover {
+				cursor: pointer;
+			}
+		}
+
+		.help-text {
+			margin-top: 5px;
+			color: #656565;
+			font-size: 0.9em;
+		}
+	}
+
+	table {
+		width: 60%;
+		margin: 0 auto;
+		border-collapse: collapse;
+
+		th {
+			text-align: left;
+		}
+
+		tr {
+			border-top: 1px solid #ededed;
+			border-bottom: 1px solid #ededed;
+
+			button {
+				margin: 0;
+				line-height: 1;
+				padding: 6px 9px;
+				background: -webkit-linear-gradient(top, darken(red, 5%) 0%, darken(red, 15%) 100%);
+				border-radius: 5px;
+				color: white;
+				text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+				box-shadow: 0 1px 1px rgba(255,255,255,0.33) inset;
+			}
+		}
+
+		th, td {
+			padding: 10px;
+		}
+	}
+}
+
+footer {
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+	opacity: 0.6;
+}
