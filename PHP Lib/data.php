@@ -4,9 +4,6 @@
 	//Interface
 	abstract class DataSource
 	{
-		public static $sqlLocation = 'localhost';
-		public static $sqlUser = 'yogAdmin';
-		public static $sqlPass = 'EuRMd8EWDLAB';
 		protected $location;
 		
 		public function __construct($dataLocation)
@@ -136,7 +133,7 @@
 		}
 	}
 	
-	$sqlSource = new SQLDataSource(DataSource::$sqlLocation, DataSource::$sqlUser, DataSource::$sqlPass, 'Yogstats');
+	$sqlSource = new SQLDataSource(SQLConfig::$sqlLocation, SQLConfig::$sqlUser, SQLConfig::$sqlPass, 'Yogstats');
 	$sqlSource->open();
 	
 	class SQLDataSource extends DataSource

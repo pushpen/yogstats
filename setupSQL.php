@@ -1,4 +1,6 @@
 <?php
+	require_once 'config.php';
+	
 	function query($query)
 	{
 		global $con;
@@ -11,25 +13,25 @@
 	}
 	
 	$database = 'Yogstats';
-	$location = 'localhost';
+	$location = SQLConfig::$SqlLocation;
 	$rootUser = 'root';
 	$pass = '';
 	$con = mysqli_connect($location, $rootUser, $pass);
 	
-	$userExists = mysqli_fetch_array(query('SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = "yogAdmin")'));
+	$userExists = mysqli_fetch_array(query('SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = "' . SQLConfig::$SqlUser . '")'));
 	
 	if(!$userExists[0])
 	{
-		query('CREATE USER "yogAdmin"@"localhost" IDENTIFIED BY "EuRMd8EWDLAB"');
-		echo 'User yogAdmin created <br>';
+		query('CREATE USER "' . SQLConfig::$SqlUser . '"@"localhost" IDENTIFIED BY "' . SQLConfig::$SqlPass . '"');
+		echo 'User ' . SQLConfig::$SqlUser . ' created <br>';
 	}
 	query('CREATE DATABASE IF NOT EXISTS ' . $database);
 	echo 'Database ' . $database . ' created <br>';
-	query('GRANT ALL ON ' . $database . '.* TO "yogAdmin"@"localhost"');
-	echo 'All permissions for ' . $database . ' given to yogAdmin <br>';
+	query('GRANT ALL ON ' . $database . '.* TO "' . SQLConfig::$SqlUser . '"@"localhost"');
+	echo 'All permissions for ' . $database . ' given to ' . SQLConfig::$SqlUser . '<br>';
 	mysqli_close($con);
-	$con = mysqli_connect($location, 'yogAdmin', 'EuRMd8EWDLAB', $database);
-	echo 'Reconnected as yogAdmin <br>';
+	$con = mysqli_connect($location, SQLConfig::$SqlUser, SQLConfig::$SqlPass, $database);
+	echo 'Reconnected as ' . SQLConfig::$SqlUser . '<br>';
 	
 	query('CREATE TABLE IF NOT EXISTS User (' . 
 		  'GoogleID VARCHAR(32) NOT NULL PRIMARY KEY,' .

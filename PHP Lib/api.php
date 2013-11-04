@@ -5,6 +5,7 @@
 	require_once 'user.php';
 	require_once 'trackedChannel.php';
 	require_once 'report.php';
+	require_once 'config.php';
 	
 	class Util
 	{
@@ -20,8 +21,6 @@
 	
 	class Auth
 	{
-		private static $clientID = '696232355614.apps.googleusercontent.com';
-		private static $clientSecret = '9hPHiYyVKNiMDNXkTNuayD6Q';
 		private static $redirectUri = 'https://localhost/yogstats/authCode.php';
 		private static $domain = '';
 		private static $serverRoot = 'https://localhost';
@@ -117,8 +116,8 @@
 						
 						//Create google client and oauth service, authenticate
 						$GLOBALS['gClient'] = new Google_Client();
-						$GLOBALS['gClient']->setClientId(Auth::$clientID);
-						$GLOBALS['gClient']->setClientSecret(Auth::$clientSecret);
+						$GLOBALS['gClient']->setClientId(AuthConfig::$ClientID);
+						$GLOBALS['gClient']->setClientSecret(AuthConfig::$ClientSecret);
 						$GLOBALS['gClient']->setRedirectUri(Auth::$redirectUri);
 						$GLOBALS['gOAuth'] = new Google_Oauth2Service($GLOBALS['gClient']);
 						$GLOBALS['gClient']->authenticate($_SESSION['authCode']);
@@ -181,8 +180,8 @@
 			if(!isset($GLOBALS['gClient']))
 			{			
 				$GLOBALS['gClient'] = new Google_Client();
-				$GLOBALS['gClient']->setClientId(Auth::$clientID);
-				$GLOBALS['gClient']->setClientSecret(Auth::$clientSecret);
+				$GLOBALS['gClient']->setClientId(AuthConfig::$ClientID);
+				$GLOBALS['gClient']->setClientSecret(AuthConfig::$ClientSecret);
 				$GLOBALS['gClient']->setRedirectUri(Auth::$redirectUri);
 				$GLOBALS['gClient']->setAccessToken($_SESSION['authAccessToken']);
 				$GLOBALS['gOAuth'] = new Google_Oauth2Service($GLOBALS['gClient']);
@@ -199,7 +198,7 @@
 		public static function createAuthCodeURI($redirectURI, $permissions, $fromUrl)
 		{
 			return 'https://accounts.google.com/o/oauth2/auth?client_id=' . 
-			Auth::$clientID . 
+			AuthConfig::$ClientID . 
 			'&response_type=code&access_type=offline&prompt=consent' . 
 			'&scope=' .
 			urlencode($permissions) .
