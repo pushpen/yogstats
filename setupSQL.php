@@ -1,5 +1,5 @@
 <?php
-	require_once 'config.php';
+	require_once 'PHP Lib/config.php';
 	
 	function query($query)
 	{
@@ -12,7 +12,7 @@
 		return $res;
 	}
 	
-	$database = 'Yogstats';
+	$database = SQLConfig::$DBName;
 	$location = SQLConfig::$SqlLocation;
 	$rootUser = 'root';
 	$pass = '';
@@ -84,9 +84,9 @@
 	query('CREATE TABLE IF NOT EXISTS ReportChannel (' . 
 		  'ReportChannelID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,' .
 		  'ReportID INT NOT NULL,' .
-		  'ChannelID INT NOT NULL,' .
+		  'TrackedID INT NOT NULL,' .
 		  'FOREIGN KEY (ReportID) REFERENCES Report(ReportID) ON UPDATE CASCADE ON DELETE CASCADE,' .
-		  'FOREIGN KEY (ChannelID) REFERENCES TrackedChannel(TrackedID) ON UPDATE CASCADE ON DELETE CASCADE' .
+		  'FOREIGN KEY (TrackedID) REFERENCES TrackedChannel(TrackedID) ON UPDATE CASCADE ON DELETE CASCADE' .
 		  ')'
 		 );
 	echo 'Datatable ReportChannel created <br>';
