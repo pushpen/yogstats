@@ -2,7 +2,7 @@
 	require_once 'google-api-php-client/src/contrib/Google_YouTubeService.php';
 	
 	//Interface
-	class DataSource
+	abstract class DataSource
 	{
 		public static $sqlLocation = 'localhost';
 		public static $sqlUser = 'yogAdmin';
@@ -317,6 +317,11 @@
 		public function sanitise($string)
 		{
 			return mysqli_real_escape_string($this->con, $string);
+		}
+		
+		public function getLastID()
+		{
+			return mysqli_insert_id($this->con);
 		}
 	}
 ?>
