@@ -53,7 +53,7 @@
 		public static $Owner = 7;
 	}
 	
-	public class ReportPermissionDataHelper
+	class ReportPermissionDataHelper
 	{
 		private static $tableName = 'ReportPermission';
 		private static $columnNames = array('ReportPermissionID', 'ReportID', 'GoogleID', 'Permissions');

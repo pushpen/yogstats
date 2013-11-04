@@ -39,7 +39,7 @@
 		}
 	}
 	
-	public class ReportStatisticDataHelper
+	class ReportStatisticDataHelper
 	{
 		private static $tableName = 'ReportStatistic';
 		private static $columnNames = array('ReportStatisticID', 'ReportID', 'StatisticID');

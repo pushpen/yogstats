@@ -39,7 +39,7 @@
 		}
 	}
 	
-	public class ReportChannelDataHelper
+	class ReportChannelDataHelper
 	{
 		private static $tableName = 'ReportChannel';
 		private static $columnNames = array('ReportChannelID', 'ReportID', 'TrackedID');
