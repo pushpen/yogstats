@@ -1,11 +1,11 @@
 <?php
 	require_once 'google-api-php-client/src/Google_Client.php';
 	require_once 'google-api-php-client/src/contrib/Google_Oauth2Service.php';
-	require_once 'data.php';
-	require_once 'user.php';
-	require_once 'trackedChannel.php';
-	require_once 'report.php';
-	require_once 'config.php';
+	require_once 'PHP Lib/config.php';
+	require_once 'PHP Lib/data.php';
+	require_once 'PHP Lib/user.php';
+	require_once 'PHP Lib/trackedChannel.php';
+	require_once 'PHP Lib/report.php';
 	
 	class Util
 	{
