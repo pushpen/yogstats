@@ -10,7 +10,7 @@
 		return $res;
 	}
 	
-	$database = 'YogstatsTest';
+	$database = 'Yogstats';
 	$location = 'localhost';
 	$rootUser = 'root';
 	$pass = '';
@@ -60,4 +60,41 @@
 		  ')'
 		 );
 	echo 'Datatable Statistic created <br>';
+	query('CREATE TABLE IF NOT EXISTS Report (' . 
+		  'ReportID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,' .
+		  'CreatorID VARCHAR(32) NOT NULL,' .
+		  'Display TINYINT,' .
+		  'HasSum BIT,' .
+		  'FOREIGN KEY (CreatorID) REFERENCES User (GoogleID) ON UPDATE CASCADE ON DELETE NO ACTION' .
+		  ')'
+		 );
+	echo 'Datatable Report created <br>';
+	query('CREATE TABLE IF NOT EXISTS ReportPermission (' . 
+		  'ReportPermissionID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,' .
+		  'ReportID INT NOT NULL,' .
+		  'GoogleID VARCHAR(32) NOT NULL,' .
+		  'Permissions TINYINT,' .
+		  'FOREIGN KEY (ReportID) REFERENCES Report(ReportID) ON UPDATE CASCADE ON DELETE CASCADE,'.
+		  'FOREIGN KEY (GoogleID) REFERENCES User(GoogleID) ON UPDATE CASCADE ON DELETE NO ACTION' .
+		  ')'
+		 );
+	echo 'Datatable ReportPermission created <br>';
+	query('CREATE TABLE IF NOT EXISTS ReportChannel (' . 
+		  'ReportChannelID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,' .
+		  'ReportID INT NOT NULL,' .
+		  'ChannelID INT NOT NULL,' .
+		  'FOREIGN KEY (ReportID) REFERENCES Report(ReportID) ON UPDATE CASCADE ON DELETE CASCADE,' .
+		  'FOREIGN KEY (ChannelID) REFERENCES TrackedChannel(TrackedID) ON UPDATE CASCADE ON DELETE CASCADE' .
+		  ')'
+		 );
+	echo 'Datatable ReportChannel created <br>';
+	query('CREATE TABLE IF NOT EXISTS ReportStatistic (' . 
+		  'ReportStatisticID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,' .
+		  'ReportID INT NOT NULL,' .
+		  'StatisticID INT NOT NULL,' .
+		  'FOREIGN KEY (ReportID) REFERENCES Report(ReportID) ON UPDATE CASCADE ON DELETE CASCADE,' .
+		  'FOREIGN KEY (StatisticID) REFERENCES Statistic(StatisticID) ON UPDATE CASCADE ON DELETE CASCADE' .
+		  ')'
+		 );
+	echo 'Datatable ReportStatistic created <br>';
 ?>
