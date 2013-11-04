@@ -14,3 +14,4 @@ wp-content/backups/
 sitemap.xml.gz
 google-api-php-client/
 PHP Lib/config.php
+test.php
