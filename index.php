@@ -24,12 +24,7 @@
 	}
 	else
 	{
-		$stats = StatisticDataHelper::getStatistics();
-		foreach($stats as $value)
-		{
-			var_dump($value);
-			echo '<br>';
-		}
+		ReportDataHelper::putNewReport(Report::CreateReport(Util::getUser()->getGoogleID(), Display::Table, 
 	}
 ?>
 </body>
