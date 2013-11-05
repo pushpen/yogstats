@@ -12,10 +12,21 @@
 		return $res;
 	}
 	
+	function createTableList($dbName, $tables)
+	{
+		foreach($tables as $key => $table)
+		{
+			$tables[$key] = $dbName . '.' . $table;
+		}
+		
+		return $tables;
+	}
+	
 	$database = SQLConfig::$DBName;
 	$location = SQLConfig::$SqlLocation;
 	$rootUser = 'root';
 	$pass = '';
+	$shouldDrop = false;
 	$con = mysqli_connect($location, $rootUser, $pass);
 	
 	$userExists = mysqli_fetch_array(query('SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = "' . SQLConfig::$SqlUser . '")'));
@@ -29,6 +40,18 @@
 	echo 'Database ' . $database . ' created <br>';
 	query('GRANT ALL ON ' . $database . '.* TO "' . SQLConfig::$SqlUser . '"@"localhost"');
 	echo 'All permissions for ' . $database . ' given to ' . SQLConfig::$SqlUser . '<br>';
+	
+	if($shouldDrop)
+	{
+		$tableList = createTableList(SQLConfig::$DBName, array('ReportChannel', 'ReportPermission', 'ReportStatistic'));
+		query('DROP TABLE IF EXISTS ' . implode(', ', $tableList));
+		$tableList = createTableList(SQLConfig::$DBName, array('Report', 'Statistic', 'TrackedChannel'));
+		query('DROP TABLE IF EXISTS ' . implode(', ', $tableList));
+		$tableList = createTableList(SQLConfig::$DBName, array('User'));
+		query('DROP TABLE IF EXISTS ' . implode(', ', $tableList));
+		echo 'Dropped existing datatables <br>';
+	}
+	
 	mysqli_close($con);
 	$con = mysqli_connect($location, SQLConfig::$SqlUser, SQLConfig::$SqlPass, $database);
 	echo 'Reconnected as ' . SQLConfig::$SqlUser . '<br>';
@@ -65,6 +88,7 @@
 	query('CREATE TABLE IF NOT EXISTS Report (' . 
 		  'ReportID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,' .
 		  'CreatorID VARCHAR(32) NOT NULL,' .
+		  'ReportName VARCHAR(64),' .
 		  'Display TINYINT,' .
 		  'HasSum BIT,' .
 		  'FOREIGN KEY (CreatorID) REFERENCES User (GoogleID) ON UPDATE CASCADE ON DELETE NO ACTION' .
@@ -99,4 +123,22 @@
 		  ')'
 		 );
 	echo 'Datatable ReportStatistic created <br>';
+	
+	try
+	{
+		query('INSERT INTO Statistic (StatisticID,StatisticName,FieldName,FieldValue,ResponseLocation,APISource) VALUES (1,"Total Views","part","statistics","statistics.viewCount",0)');
+	}
+	catch(Exception $ex)
+	{
+		//echo $ex->getMessage() . '<br>';
+	}
+	try
+	{
+		query('INSERT INTO Statistic (StatisticID,StatisticName,FieldName,FieldValue,ResponseLocation,APISource) VALUES (2,"Total Subscribers","part","statistics","statistics.subscriberCount",0)');
+	}
+	catch(Exception $ex)
+	{
+		//echo $ex->getMessage() . '<br>';
+	}
+	echo 'Statistic types added <br>';
 ?>
