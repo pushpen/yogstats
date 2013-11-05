@@ -49,6 +49,7 @@
 		$report = ReportDataHelper::getVisibleReports(Util::getUser())[1];
 		$data = $report->getReportData();
 		
+		echo $report->getReportName() . '<br>';
 		echo '<table border="1" cellpadding="5">';
 		$header = $data->getHeader();
 		$sum = $data->getSum();
