@@ -1,8 +1,8 @@
 <?php
-	require_once 'reportPermission.php';
-	require_once 'reportChannel.php';
-	require_once 'reportStatistic.php';
-	require_once 'statistic.php';
+	require_once __DIR__ . '/reportPermission.php';
+	require_once __DIR__ . '/reportChannel.php';
+	require_once __DIR__ . '/reportStatistic.php';
+	require_once __DIR__ . '/statistic.php';
 	
 	class Report
 	{

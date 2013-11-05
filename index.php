@@ -1,5 +1,5 @@
 <?php
-	require_once "PHP Lib/api.php";
+	require_once "/PHP Lib/api.php";
 	
 	$error = false;
 	

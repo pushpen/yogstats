@@ -1,11 +1,11 @@
 <?php
-	require_once 'google-api-php-client/src/Google_Client.php';
-	require_once 'google-api-php-client/src/contrib/Google_Oauth2Service.php';
-	require_once 'PHP Lib/config.php';
-	require_once 'PHP Lib/data.php';
-	require_once 'PHP Lib/user.php';
-	require_once 'PHP Lib/trackedChannel.php';
-	require_once 'PHP Lib/report.php';
+	require_once __DIR__ . '/../google-api-php-client/src/Google_Client.php';
+	require_once __DIR__ . '/../google-api-php-client/src/contrib/Google_Oauth2Service.php';
+	require_once __DIR__ . '/config.php';
+	require_once __DIR__ . '/data.php';
+	require_once __DIR__ . '/user.php';
+	require_once __DIR__ . '/trackedChannel.php';
+	require_once __DIR__ . '/report.php';
 	
 	abstract class SanitiseType
 	{
@@ -53,8 +53,12 @@
 			return $_SESSION['authUser'];
 		}
 		
-		public static function ValidateNumber($value, $min = PHP_INT_MAX+1, $max = PHP_INT_MAX)
+		public static function ValidateNumber($value, $min = null, $max = PHP_INT_MAX)
 		{
+			if($min == null)
+			{
+				$min = PHP_INT_MAX + 1;
+			}
 			if(!is_numeric($value)) 
 			{
 				return false;
@@ -70,7 +74,7 @@
 			return 0;
 		}
 		
-		public static function GetValidateErrorMessage($err, $min = PHP_INT_MAX+1, $max = PHP_INT_MAX)
+		public static function GetValidateErrorMessage($err, $min = Util::MIN, $max = PHP_INT_MAX)
 		{
 			if($err === false)
 			{

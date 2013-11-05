@@ -1,6 +1,6 @@
 <?php
-	require_once 'google-api-php-client/src/contrib/Google_YouTubeService.php';
-	require_once 'PHP Lib/config.php';
+	require_once __DIR__ . '/../google-api-php-client/src/contrib/Google_YouTubeService.php';
+	require_once __DIR__ . '/config.php';
 	
 	//Interface
 	abstract class DataSource
