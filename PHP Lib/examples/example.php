@@ -1,7 +1,7 @@
 <?php
 	//Must be done before all html markup and in all php files viewable by a user
 	//Include the back-end stuff
-	require_once 'PHP Lib/api.php';
+	require_once __DIR__ . '/../api.php';
 	//Authenticate the user, will throw exception if cannot authenticate
 	Auth::authenticate();
 ?>

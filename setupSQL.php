@@ -1,5 +1,5 @@
 <?php
-	require_once 'PHP Lib/config.php';
+	require_once __DIR__ . '/PHP Lib/config.php';
 	
 	function query($query)
 	{
