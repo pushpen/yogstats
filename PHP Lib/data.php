@@ -250,6 +250,7 @@
 		{
 			if(is_string($var))
 			{
+				$var = str_replace("\\", "\\\\", $var);
 				$var = str_replace("'", '\'', $var);
 				$var = str_replace('"', '\"', $var);
 				$var = str_replace("\b", '\b', $var);
@@ -284,7 +285,7 @@
 								' WHERE ' . $conditions;
 			//echo $query . '<br>';
 			$this->result = mysqli_query($this->con, $query);
-			if(!$this->result) throw new Exception('Query threw exception: ' . mysqli_error($this->con));
+			if(!$this->result) throw new Exception('Query threw exception: ' . mysqli_error($this->con), mysqli_errno($this->con));
 			return mysqli_fetch_array($this->result);
 		}
 		
@@ -304,7 +305,7 @@
 								' WHERE ' . $conditions;
 			//echo $query . '<br>';
 			$qResult = mysqli_query($this->con, $query);
-			if(!$qResult) throw new Exception('Update threw exception: ' . mysqli_error($this->con));
+			if(!$qResult) throw new Exception('Update threw exception: ' . mysqli_error($this->con), mysqli_errno($this->con));
 		}
 		
 		public function insert($destination, $fields)
@@ -313,7 +314,7 @@
 								. ') VALUES (' . SQLDataSource::sqlImplode(', ', $fields) . ')';
 			//echo $query . '<br>';
 			$qResult = mysqli_query($this->con, $query);
-			if(!$qResult) throw new Exception('Insert threw exception: ' . mysqli_error($this->con));
+			if(!$qResult) throw new Exception('Insert threw exception: ' . mysqli_error($this->con), mysqli_errno($this->con));
 		}
 		
 		public function sanitise($string)
