@@ -126,9 +126,9 @@
 	
 	class Auth
 	{
-		private static $redirectUri = 'https://localhost/yogstats/authCode.php';
+		private static $redirectUri = 'http://localhost:8888/work/yogstats/authCode.php';
 		private static $domain = '';
-		private static $serverRoot = 'https://localhost';
+		private static $serverRoot = 'http://localhost:8888';
 		
 		public static function hasSession()
 		{
@@ -163,16 +163,16 @@
 		//Permissions array optional, passing with no parameters will run default auth method
 		public static function authenticate($permissions = array('openid', 'email'))
 		{
-			if(!$_SERVER['HTTPS'])
-			{
-				header('Location: ' . Auth::$serverRoot . $_SERVER['REQUEST_URI']);
-				exit;
-			}
+			// if(!$_SERVER['HTTPS'])
+			// {
+			// 	header('Location: ' . Auth::$serverRoot . $_SERVER['REQUEST_URI']);
+			// 	exit;
+			// }
 			Auth::startSession();
 			
 			if(!Auth::hasUser())
 			{
-				echo 'No User';
+//				echo 'No User';
 				//Have a cookie, lookup existing user data
 				$userFound = false;
 				if(isset($_COOKIE['preUser']))
