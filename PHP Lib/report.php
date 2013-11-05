@@ -8,6 +8,7 @@
 	{
 		private $reportID;
 		private $creatorID;
+		private $reportName;
 		private $display;
 		private $hasSum;
 		
@@ -15,10 +16,11 @@
 		private $channels = null;
 		private $statistics = null;
 		
-		public function __construct($reportID, $creatorID, $display, $hasSum)
+		public function __construct($reportID, $creatorID, $reportName, $display, $hasSum)
 		{
 			$this->reportID = $reportID;
 			$this->creatorID = $creatorID;
+			$this->reportName = $reportName;
 			$this->display = $display;
 			$this->hasSum = $hasSum;
 			
@@ -31,9 +33,9 @@
 			$this->fields = array();*/
 		}
 		
-		public static function CreateReport($creatorID, $display, $hasSum)
+		public static function CreateReport($creatorID, $reportName, $display, $hasSum)
 		{
-			return new Report(-1, $creatorID, $display, $hasSum);
+			return new Report(-1, $creatorID, $reportName, $display, $hasSum);
 		}
 		
 		public function getReportData($headerRow = true)
@@ -191,6 +193,11 @@
 			return $this->creatorID;
 		}
 		
+		public function getReportName()
+		{
+			return $this->reportName;
+		}
+		
 		public function getDisplay()
 		{
 			return $this->display;
@@ -280,7 +287,7 @@
 	class ReportDataHelper
 	{
 		private static $tableName = 'Report';
-		private static $columnNames = array('ReportID', 'CreatorID', 'Display', 'HasSum');
+		private static $columnNames = array('ReportID', 'CreatorID', 'ReportName', 'Display', 'HasSum');
 		
 		private static function insertReport($report)
 		{
@@ -390,6 +397,7 @@
 		{
 			$retArray = array();
 			$retArray['CreatorID'] = $report->getCreatorID();
+			$retArray['ReportName'] = $report->getReportName();
 			$retArray['Display'] = $report->getDisplay();
 			$retArray['HasSum'] = $report->getHasSum();
 			
@@ -402,7 +410,7 @@
 			{
 				return null;
 			}
-			return new Report($row['ReportID'], $row['CreatorID'], $row['Display'], $row['HasSum']);
+			return new Report($row['ReportID'], $row['CreatorID'], $row['ReportName'], $row['Display'], $row['HasSum']);
 		}
 	}
 ?>
