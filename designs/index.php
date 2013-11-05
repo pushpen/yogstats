@@ -2,9 +2,6 @@
 	require_once __DIR__ . '/../PHP Lib/api.php';
 	Auth::authenticate();
 	
-	$report = ReportDataHelper::getReportByID(4);
-	$reportData = $report->getReportData(false);
-	
 	function writeTrackedChannels($channels)
 	{
 		foreach($channels as $channel)
@@ -45,6 +42,9 @@
 			}
 		}
 	}
+	
+	$report = ReportDataHelper::getReportByID(4);
+	$reportData = $report->getReportData(false);
 ?>
 
 <!DOCTYPE html>
@@ -55,6 +55,8 @@
 		<!--- scripts here eventually when we need them, namely: jQuery, Google Visualization Plugin, etc. -->
 		<script type="text/javascript" src="//use.typekit.net/pqg7zey.js"></script>
 		<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+		<script type="text/javascript">
+		</s
 	</head>
 	<body>
 		<header>
@@ -114,7 +116,7 @@
 			<section class="add chanel">
 				<h2>Add a channel</h2>
 				<p>Add a channel here to have it's statistics be included in future reports.</p>
-				<form id = 'createChannelForm' method = "POST">
+				<form id = "createChannelForm" method = "POST">
 					<label for="f-name">YouTube Name:</label>
 					<input type="text" id="f-name" name ="channel" />
 					<input type="hidden" name="formID" value="createChannelForm" />
@@ -127,6 +129,7 @@
 			<section class="edit chanel">
 				<h2>Channel Manager</h2>
 				<p>Click a channel's button to have it be removed from future reports.</p>
+				<form id = "removeChannelForm" method="POST">
 				<table>
 					<thead>
 						<tr>
@@ -143,6 +146,7 @@
 						?>
 					</tbody>
 				</table>
+				</form>
 			</section>
 		</main>
 		<footer>
