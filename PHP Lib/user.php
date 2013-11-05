@@ -102,6 +102,37 @@
 			$result = $sqlSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, 'Hash = ' . SQLDataSource::sqlValFormat($hash));
 			return UserDataHelper::getUserFromRow($result);
 		}
+		
+		public static function getUsers()
+		{
+			global $sqlSource;
+			$users = array();
+			$row = $sqlSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, '1=1');
+			
+			while($row != null)
+			{
+				$users[] = UserDataHelper::getUserFromRow($row);
+				$row = $sqlSource->nextResult();
+			}
+			
+			return $users;
+		}
+		
+		public static function getOtherUsers($user)
+		{
+			global $sqlSource;
+			$users = array();
+			$row = $sqlSource->query(array(UserDataHelper::$tableName), UserDataHelper::$columnNames, 'GoogleID != ' . SQLDataSource::sqlValFormat($user->getGoogleID()));
+			
+			while($row != null)
+			{
+				$users[] = UserDataHelper::getUserFromRow($row);
+				$row = $sqlSource->nextResult();
+			}
+			
+			return $users;
+		}
+		
 		public static function updateUser($user)
 		{
 			global $sqlSource;
