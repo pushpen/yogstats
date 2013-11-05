@@ -165,6 +165,7 @@
 				header('Location: ' . AuthConfig::$ServerRoot . $_SERVER['REQUEST_URI']);
 				exit;
 			}
+			
 			Auth::startSession();
 			
 			if(!Auth::hasUser())
