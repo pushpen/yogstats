@@ -9,9 +9,9 @@
 	
 	abstract class SanitiseType
 	{
-		public $String = 0;
-		public $Int = 1;
-		public $Float = 2;
+		public static $String = 0;
+		public static $Int = 1;
+		public static $Float = 2;
 	}
 	
 	class Util
