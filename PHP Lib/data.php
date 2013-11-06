@@ -18,6 +18,7 @@
 		public function query($sources, $fields, $conditions){}
 		public function update($destination, $fields, $conditions){}
 		public function insert($destination, $fields) {}
+		public function delete($destination, $conditions) {}
 		//Returns the next row from the last query or NULL if none is available
 		public function nextResult(){}
 		public function sanitise($string){}
@@ -119,12 +120,17 @@
 			return $retRow;
 		}
 		
-		public function update($destination, $fields, $condition)
+		public function update($destination, $fields, $conditions)
 		{
 			return new Exception('This data is read only');
 		}
 		
 		public function insert($destination, $fields)
+		{
+			return new Exception('This data is read only');
+		}
+		
+		public function delete($destination, $conditions)
 		{
 			return new Exception('This data is read only');
 		}
@@ -315,6 +321,14 @@
 			//echo $query . '<br>';
 			$qResult = mysqli_query($this->con, $query);
 			if(!$qResult) throw new Exception('Insert threw exception: ' . mysqli_error($this->con), mysqli_errno($this->con));
+		}
+		
+		public function delete($destination, $conditions)
+		{
+			$query = 'DELETE FROM ' . $destination . ' WHERE ' . $conditions;
+			//echo $query . '<br>';
+			$qResult = mysqli_query($this->con, $query);
+			if(!$qResult) throw new Exception('Delete threw exception: ' . mysqli_error($this->con), mysqli_errno($this->con));
 		}
 		
 		public function sanitise($string)
