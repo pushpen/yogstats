@@ -89,6 +89,7 @@
 		  'ReportID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,' .
 		  'CreatorID VARCHAR(32) NOT NULL,' .
 		  'ReportName VARCHAR(64),' .
+		  'HasAllChannels BIT,' .
 		  'Display TINYINT,' .
 		  'HasSum BIT,' .
 		  'FOREIGN KEY (CreatorID) REFERENCES User (GoogleID) ON UPDATE CASCADE ON DELETE NO ACTION' .
@@ -141,4 +142,14 @@
 		//echo $ex->getMessage() . '<br>';
 	}
 	echo 'Statistic types added <br>';
+	
+	try
+	{
+		//query('INSERT INTO Report (ReportID,CreatorID,ReportName,HasAllChannels,Display,HasSum) VALUES (1,"","part","statistics","statistics.subscriberCount",0)');
+	}
+	catch(Exception $ex)
+	{
+		//echo $ex->getMessage() . '<br>';
+	}
+	//echo 'Default Report added <br>';
 ?>

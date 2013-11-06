@@ -9,6 +9,7 @@
 		private $reportID;
 		private $creatorID;
 		private $reportName;
+		private $hasAllChannels;
 		private $display;
 		private $hasSum;
 		
@@ -16,11 +17,12 @@
 		private $channels = null;
 		private $statistics = null;
 		
-		public function __construct($reportID, $creatorID, $reportName, $display, $hasSum)
+		public function __construct($reportID, $creatorID, $reportName, $hasAllChannels, $display, $hasSum)
 		{
 			$this->reportID = $reportID;
 			$this->creatorID = $creatorID;
 			$this->reportName = $reportName;
+			$this->hasAllChannels = $hasAllChannels;
 			$this->display = $display;
 			$this->hasSum = $hasSum;
 			
@@ -33,9 +35,9 @@
 			$this->fields = array();*/
 		}
 		
-		public static function CreateReport($creatorID, $reportName, $display, $hasSum)
+		public static function CreateReport($creatorID, $reportName, $hasAllChannels, $display, $hasSum)
 		{
-			return new Report(-1, $creatorID, $reportName, $display, $hasSum);
+			return new Report(-1, $creatorID, $reportName, $hasAllChannels, $display, $hasSum);
 		}
 		
 		public function getReportData($headerRow = true)
@@ -52,9 +54,16 @@
 				$resolvedStats[] = StatisticDataHelper::getStatisticByID($statistic->getStatisticID());
 			}
 			
-			foreach($this->channels as $channel)
+			if($this->hasAllChannels)
 			{
-				$resolvedChannels[] = TrackedChannelDataHelper::getTrackedChannelByID($channel->getTrackedID());
+				$resolvedChannels = TrackedChannelDataHelper::getTrackedChannels();
+			}
+			else
+			{
+				foreach($this->channels as $channel)
+				{
+					$resolvedChannels[] = TrackedChannelDataHelper::getTrackedChannelByID($channel->getTrackedID());
+				}
 			}
 			
 			$tableHeader = null;
@@ -198,6 +207,11 @@
 			return $this->reportName;
 		}
 		
+		public function getHasAllChannels()
+		{
+			return $this->hasAllChannels;
+		}
+		
 		public function getDisplay()
 		{
 			return $this->display;
@@ -212,7 +226,14 @@
 		{
 			if($this->channels === null)
 			{
-				$this->channels = ReportChannelDataHelper::getReportChannels($this->reportID);
+				if(!$this->hasAllChannels)
+				{
+					$this->channels = ReportChannelDataHelper::getReportChannels($this->reportID);
+				}
+				else
+				{
+					$this->channels = array();
+				}
 			}
 			return $this->channels;
 		}
@@ -287,7 +308,7 @@
 	class ReportDataHelper
 	{
 		private static $tableName = 'Report';
-		private static $columnNames = array('ReportID', 'CreatorID', 'ReportName', 'Display', 'HasSum');
+		private static $columnNames = array('ReportID', 'CreatorID', 'ReportName', 'HasAllChannels', 'Display', 'HasSum');
 		
 		private static function insertReport($report)
 		{
@@ -398,6 +419,7 @@
 			$retArray = array();
 			$retArray['CreatorID'] = $report->getCreatorID();
 			$retArray['ReportName'] = $report->getReportName();
+			$retArray['HasAllChannels'] = $report->getHasAllChannels();
 			$retArray['Display'] = $report->getDisplay();
 			$retArray['HasSum'] = $report->getHasSum();
 			
@@ -410,7 +432,7 @@
 			{
 				return null;
 			}
-			return new Report($row['ReportID'], $row['CreatorID'], $row['ReportName'], $row['Display'], $row['HasSum']);
+			return new Report($row['ReportID'], $row['CreatorID'], $row['ReportName'], $row['HasAllChannels'], $row['Display'], $row['HasSum']);
 		}
 	}
 ?>

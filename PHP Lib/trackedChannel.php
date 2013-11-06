@@ -58,8 +58,13 @@
 			global $sqlSource;
 			
 			$newChannel = TrackedChannel::CreateFromChannelName($channelName);
-			$sqlSource->insert(TrackedChannelDataHelper::$tableName, TrackedChannelDataHelper::getNewAssocArray($newChannel));
-			
+			$sqlSource->insert(TrackedChannelDataHelper::$tableName, TrackedChannelDataHelper::getNewAssocArray($newChannel));	
+		}
+		
+		public static function removeTrackedChannel($id)
+		{
+			global $sqlSource;
+			$sqlSource->delete(TrackedChannelDataHelper::$tableName, 'TrackedID = ' . $id);
 		}
 		
 		public static function getTrackedChannelByID($id)

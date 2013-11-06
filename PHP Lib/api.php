@@ -9,9 +9,9 @@
 	
 	abstract class SanitiseType
 	{
-		public $String = 0;
-		public $Int = 1;
-		public $Float = 2;
+		public static $String = 0;
+		public static $Int = 1;
+		public static $Float = 2;
 	}
 	
 	class Util
@@ -126,9 +126,6 @@
 	
 	class Auth
 	{
-		private static $redirectUri = 'http://localhost:8888/work/yogstats/authCode.php';
-		private static $domain = '';
-		private static $serverRoot = 'http://localhost:8888';
 		
 		public static function hasSession()
 		{
@@ -163,16 +160,17 @@
 		//Permissions array optional, passing with no parameters will run default auth method
 		public static function authenticate($permissions = array('openid', 'email'))
 		{
-			// if(!$_SERVER['HTTPS'])
-			// {
-			// 	header('Location: ' . Auth::$serverRoot . $_SERVER['REQUEST_URI']);
-			// 	exit;
-			// }
+			if(!$_SERVER['HTTPS'])
+			{
+				header('Location: ' . AuthConfig::$ServerRoot . $_SERVER['REQUEST_URI']);
+				exit;
+			}
+			
 			Auth::startSession();
 			
 			if(!Auth::hasUser())
 			{
-//				echo 'No User';
+				//echo 'No User';
 				//Have a cookie, lookup existing user data
 				$userFound = false;
 				if(isset($_COOKIE['preUser']))
@@ -198,7 +196,7 @@
 						{	
 							$authState = md5(rand());
 							$_SESSION['authState'] = $authState;
-							header('Location: ' . Auth::createAuthCodeURI(Auth::$redirectUri, implode(' ', $permissions), 'https://localhost' . $_SERVER['REQUEST_URI']));
+							header('Location: ' . Auth::createAuthCodeURI(AuthConfig::$RedirectUri, implode(' ', $permissions), 'https://localhost' . $_SERVER['REQUEST_URI']));
 							exit;
 						}
 						/*$ch = curl_init('https://accounts.google.com/o/oauth2/token');
@@ -223,7 +221,7 @@
 						$GLOBALS['gClient'] = new Google_Client();
 						$GLOBALS['gClient']->setClientId(AuthConfig::$ClientID);
 						$GLOBALS['gClient']->setClientSecret(AuthConfig::$ClientSecret);
-						$GLOBALS['gClient']->setRedirectUri(Auth::$redirectUri);
+						$GLOBALS['gClient']->setRedirectUri(AuthConfig::$RedirectUri);
 						$GLOBALS['gOAuth'] = new Google_Oauth2Service($GLOBALS['gClient']);
 						$GLOBALS['gClient']->authenticate($_SESSION['authCode']);
 						$_SESSION['authAccessToken'] = $GLOBALS['gClient']->getAccessToken();
@@ -256,7 +254,7 @@
 					}
 					
 					$_SESSION['authUser'] = $user;
-					setcookie('preUser', $user->getHash(), time() + 60*60*24, '/', Auth::$domain, true);
+					setcookie('preUser', $user->getHash(), time() + 60*60*24, '/', AuthConfig::$Domain, true);
 				}
 			}
 			else
@@ -273,8 +271,8 @@
 				
 				if(!isset($_COOKIE['preUser']))
 				{
-					$canSet = setcookie('preUser', $_SESSION['authUser']->getHash(), time() + 60*60*24, '/', Auth::$domain, true);
-					echo 'Cookie was sent: ' . $canSet;
+					$canSet = setcookie('preUser', $_SESSION['authUser']->getHash(), time() + 60*60*24, '/', AuthConfig::$Domain, true);
+					//echo 'Cookie was sent: ' . $canSet;
 				}
 			}
 			return true;
@@ -287,7 +285,7 @@
 				$GLOBALS['gClient'] = new Google_Client();
 				$GLOBALS['gClient']->setClientId(AuthConfig::$ClientID);
 				$GLOBALS['gClient']->setClientSecret(AuthConfig::$ClientSecret);
-				$GLOBALS['gClient']->setRedirectUri(Auth::$redirectUri);
+				$GLOBALS['gClient']->setRedirectUri(AuthConfig::$RedirectUri);
 				$GLOBALS['gClient']->setAccessToken($_SESSION['authAccessToken']);
 				$GLOBALS['gOAuth'] = new Google_Oauth2Service($GLOBALS['gClient']);
 			}
