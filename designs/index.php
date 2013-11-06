@@ -56,7 +56,16 @@
 		<script type="text/javascript" src="//use.typekit.net/pqg7zey.js"></script>
 		<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 		<script type="text/javascript">
-		</s
+			function postForm(formID)
+			{
+				document.getElementById(formID).submit();
+			}
+			
+			function removeChannel(id)
+			{
+				document.getElementById('').
+			}
+		</script>
 	</head>
 	<body>
 		<header>
@@ -121,7 +130,7 @@
 					<input type="text" id="f-name" name ="channel" />
 					<input type="hidden" name="formID" value="createChannelForm" />
 					<div class="help-text"><strong>Without</strong> http://youtube.com/</div>
-					<input type="button" onclick="document.getElementById('createChannelForm').submit()" value="Add channel" />
+					<input type="button" onclick="postForm('createChannelForm')" value="Add channel" />
 				</form>
 				<p style='color:red;'><b><?php echo $channelError ?></b></p>
 			</section>
