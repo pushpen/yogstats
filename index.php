@@ -46,7 +46,8 @@
 		//TrackedChannelDataHelper::addTrackedChannel('yogscastlalna');
 		//TrackedChannelDataHelper::addTrackedChannel('Mirosta1504');
 		//ReportDataHelper::putNewReport(Report::CreateReport(Util::getUser()->getGoogleID(), Display::$Table, true), array(), array(ReportChannel::CreateReportChannel(2),ReportChannel::CreateReportChannel(3),ReportChannel::CreateReportChannel(4)), array(ReportStatistic::CreateReportStatistic(1),ReportStatistic::CreateReportStatistic(2)));
-		$report = ReportDataHelper::getVisibleReports(Util::getUser())[1];
+		$reports = ReportDataHelper::getVisibleReports(Util::getUser());
+		$report = $reports[1];
 		$data = $report->getReportData();
 		
 		echo $report->getReportName() . '<br>';

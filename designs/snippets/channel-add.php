@@ -1,7 +1,19 @@
 <?php
 	require_once __DIR__ . '/../../PHP Lib/api.php';
-	Auth::authenticate();
 	
+	$authError = '';
+	try
+	{
+		Auth::authenticate();
+	}
+	catch(Exception $ex)
+	{
+		switch($ex->getCode())
+		{
+			default:
+				$authError = $ex->getCode() . ' ' . $ex-getMessage();
+		}
+	}
 	$createError = '';
 	if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['formID']))
 	{
@@ -32,6 +44,7 @@
 	}
 ?>
 <script type="text/javascript" src="../../JS Lib/tools.js"> </script>
+<?php if($authError != '') echo '<p class="error-text">' . $authError . '</p>'; ?>
 <section class="channel-add">
 	<h2>Add a channel</h2>
 	<p>Add a channel here to have it's statistics be included in future reports.</p>

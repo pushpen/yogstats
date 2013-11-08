@@ -196,7 +196,7 @@
 						{	
 							$authState = md5(rand());
 							$_SESSION['authState'] = $authState;
-							header('Location: ' . Auth::createAuthCodeURI(AuthConfig::$RedirectUri, implode(' ', $permissions), 'https://localhost' . $_SERVER['REQUEST_URI']));
+							header('Location: ' . Auth::createAuthCodeURI(AuthConfig::$RedirectUri, implode(' ', $permissions), AuthConfig::$ServerRoot . $_SERVER['REQUEST_URI']));
 							exit;
 						}
 						/*$ch = curl_init('https://accounts.google.com/o/oauth2/token');

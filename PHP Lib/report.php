@@ -98,15 +98,17 @@
 				
 				foreach($data as $row)
 				{
-					for($i = 0; $i < sizeof($row->getRowValues()); $i++)
+					$rowValues = $row->getRowValues();
+					
+					for($i = 0; $i < sizeof($rowValues); $i++)
 					{
-						if(is_numeric($row->getRowValues()[$i]))
+						if(is_numeric($rowValues[$i]))
 						{
 							if(!isset($values[$i]))
 							{
 								$values[$i] = 0;
 							}
-							$values[$i] += $row->getRowValues()[$i];
+							$values[$i] += $rowValues[$i];
 						}	
 						else
 						{
@@ -238,6 +240,11 @@
 			return $this->channels;
 		}
 		
+		public function setChannels($channels)
+		{
+			$this->channels = $channels;
+		}
+		
 		public function getStatistics()
 		{
 			if($this->statistics === null)
@@ -245,6 +252,11 @@
 				$this->statistics = ReportStatisticDataHelper::getReportStatistics($this->reportID);
 			}
 			return $this->statistics;
+		}
+		
+		public function setStatistics($statistics)
+		{
+			$this->statistics = $statistics;
 		}
 	}
 	
