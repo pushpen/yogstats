@@ -57,12 +57,17 @@
 			try
 			{
 				$report = ReportDataHelper::getReportByID(Util::SQLSanitise($reportID, SanitiseType::$Int));
+				if($report == null)
+				{
+					$reportError = 'Invalid report ID';
+				}
 			}
 			catch(Exception $ex)
 			{
 				switch($ex->getCode())
 				{
 					default:
+					echo 'Error <br>';
 					$reportError = $ex->getCode() . ' ' . $ex->getMessage();
 				}
 			}
