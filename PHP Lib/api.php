@@ -160,7 +160,7 @@
 		//Permissions array optional, passing with no parameters will run default auth method
 		public static function authenticate($permissions = array('openid', 'email'))
 		{
-			if(!$_SERVER['HTTPS'])
+			if(!$_SERVER['HTTPS'] && AuthConfig::$UseSSL)
 			{
 				header('Location: ' . AuthConfig::$ServerRoot . $_SERVER['REQUEST_URI']);
 				exit;
