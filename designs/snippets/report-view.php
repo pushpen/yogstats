@@ -1,6 +1,5 @@
 <?php
-	require_once __DIR__ . '/../../PHP Lib/api.php';
-	Auth::authenticate();
+	require 'header.php';
 	
 	function printReportData($reportData)
 	{
@@ -25,7 +24,7 @@
 			
 			foreach($dataRow->getRowValues() as $rowVal)
 			{
-				echo '<td class="value">' . htmlentities($rowVal) . '</td>';
+				echo '<td class="value">' . htmlentities(Util::FormatNumber($rowVal, 0)) . '</td>';
 			}
 			echo '</tr>';
 		}
@@ -37,7 +36,7 @@
 			
 			foreach($reportData->getSum()->getRowValues() as $rowVal)
 			{
-				echo '<td class="value">' . htmlentities($rowVal) . '</td>';
+				echo '<td class="value">' . htmlentities(Util::FormatNumber($rowVal, 0)) . '</td>';
 			}
 			echo '</tr>';
 		}
@@ -82,6 +81,12 @@
 		$reportError = 'Invalid report ID';
 	}
 ?>
+<script type="text/javascript">
+function back()
+{
+	window.location.href = "reports.php";
+}
+</script>
 <section class="report-view">
 	<?php 
 	if($reportError != '') echo '<p class="error-text">' . htmlentities($reportError) . '</p>';
@@ -116,4 +121,6 @@
 		</table>*/
 	}
 	?>
+	<button onclick="back();">Back</Button>
 </section>
+<?php require 'footer.php'; ?>
