@@ -122,6 +122,12 @@
 				
 			}
 		}
+		
+		public static function FormatNumber($value, $decimals)
+		{
+			if(!is_numeric($value) || $value <= 9999) return $value;
+			else return number_format($value, $decimals, '.', ',');
+		}
 	}
 	
 	class Auth
@@ -160,7 +166,7 @@
 		//Permissions array optional, passing with no parameters will run default auth method
 		public static function authenticate($permissions = array('openid', 'email'))
 		{
-			if(!$_SERVER['HTTPS'])
+			if(AuthConfig::$UseSSL && (!isset($_SERVER['HTTPS']) || !$_SERVER['HTTPS']))
 			{
 				header('Location: ' . AuthConfig::$ServerRoot . $_SERVER['REQUEST_URI']);
 				exit;
@@ -181,7 +187,7 @@
 					if($user != null)
 					{
 						$userFound = true;
-						$_SESSION['authAccessToken'] = $user->getAccessToken();
+						$_SESSION['authAccessToken'] = $user->getAuthToken();
 						$_SESSION['authUser'] = $user;
 					}
 				}

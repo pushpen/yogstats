@@ -3,6 +3,19 @@ function postFormButton(button)
 	postForm(button.form);
 }
 
+function postFormField(field, e)
+{
+	if(e.keyCode == 13)
+	{
+		postForm(field.form);
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
 function postForm(form)
 {
 	var formIDField = addHiddenField(form.id, "formID", form);
