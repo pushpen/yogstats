@@ -122,6 +122,12 @@
 				
 			}
 		}
+		
+		public static function FormatNumber($value, $decimals)
+		{
+			if(!is_numeric($value) || $value <= 9999) return $value;
+			else return number_format($value, $decimals, '.', ',');
+		}
 	}
 	
 	class Auth
@@ -181,7 +187,7 @@
 					if($user != null)
 					{
 						$userFound = true;
-						$_SESSION['authAccessToken'] = $user->getAccessToken();
+						$_SESSION['authAccessToken'] = $user->getAuthToken();
 						$_SESSION['authUser'] = $user;
 					}
 				}
