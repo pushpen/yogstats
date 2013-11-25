@@ -1,0 +1,231 @@
+header:after, header nav ul:after, main section:after, main section.summary .readout:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+
+*,
+::before,
+::after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  font: normal 16px/1.35 "Open Sans",sans-serif;
+  color: #222222;
+  margin: 0;
+}
+
+abbr {
+  font-weight: normal;
+  border-bottom: 1px dotted #ccc;
+}
+
+input,
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: none;
+}
+
+a {
+  color: #376fd9;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+h1, h2, h3, h4, strong, th {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+header {
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+  background: -webkit-linear-gradient(top, #0f254f 0%, #17397a 100%);
+  background: -moz-linear-gradient(top, #0f254f 0%, #17397a 100%);
+  background: -o-linear-gradient(top, #0f254f 0%, #17397a 100%);
+  background: linear-gradient(top, #0f254f 0%, #17397a 100%);
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+header h1 {
+  float: left;
+  margin: 0;
+}
+header nav {
+  float: right;
+}
+header nav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+header nav ul li {
+  display: block;
+  float: left;
+  line-height: 40px;
+  margin-left: 25px;
+}
+header nav ul li a {
+  color: #fff;
+}
+header nav ul li.logout {
+  line-height: 20px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+aside {
+  position: fixed;
+  z-index: 1;
+  top: 80px;
+  left: 0;
+  width: 25%;
+  padding: 20px;
+  border-right: 1px solid #ededed;
+  min-height: 100%;
+}
+aside > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+aside li {
+  margin-top: 12px;
+}
+
+main {
+  margin-left: 25%;
+  margin-top: 80px;
+  padding: 20px;
+}
+main section {
+  margin-bottom: 20px;
+}
+main section.summary {
+  float: left;
+  width: 46%;
+}
+main section.summary .readout {
+  margin-top: 10px;
+  width: 100%;
+  border: 1px solid #dadada;
+  border-radius: 5px;
+}
+main section.summary .readout .left, main section.summary .readout .right {
+  float: left;
+  width: 50%;
+  padding: 15px;
+}
+main section.summary .readout .right {
+  border-left: 1px solid #dadada;
+}
+main section.summary .readout .key, main section.summary .readout .value {
+  text-align: center;
+}
+main section.summary .readout .value {
+  font-size: 1.4em;
+}
+main section.summary .readout .key {
+  font-weight: 700;
+}
+main section.reports {
+  float: right;
+  width: 46%;
+  background: #e3ebfa;
+  padding: 15px;
+  border: 1px solid #b8ccf2;
+}
+main form .help-text {
+  color: #656565;
+}
+main form input[type="text"],
+main form label,
+main form .help-text {
+  margin: 0 0 0 40px;
+}
+main form label {
+  margin-right: 10px;
+}
+main form input[type="text"] {
+  line-height: 1;
+  margin-left: 0;
+  padding: 5px;
+  border: 1px solid #789de5;
+  font-family: inherit;
+  font-size: inherit;
+  border-radius: 3px;
+  width: 30%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) inset;
+}
+main form input[type="button"] {
+  padding: 15px 30px;
+  line-height: 1;
+  margin: 0.833em 0 0 0;
+  background: -webkit-linear-gradient(top, #1b438f 0%, #132f64 100%);
+  background: -moz-linear-gradient(top, #1b438f 0%, #132f64 100%);
+  background: -o-linear-gradient(top, #1b438f 0%, #132f64 100%);
+  background: linear-gradient(top, #1b438f 0%, #132f64 100%);
+  color: #fff;
+  font-size: inherit;
+  font-family: inherit;
+  border: none;
+  border-radius: 5px;
+  text-shadow: 0 0 1px black;
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.33) inset;
+}
+main form input[type="button"]:hover {
+  cursor: pointer;
+}
+main form .help-text {
+  margin-top: 5px;
+  color: #656565;
+  font-size: 0.9em;
+}
+main table {
+  width: 60%;
+  margin: 0 auto;
+  border-collapse: collapse;
+}
+main table th {
+  text-align: left;
+}
+main table tr {
+  border-top: 1px solid #ededed;
+  border-bottom: 1px solid #ededed;
+}
+main table tr button {
+  margin: 0;
+  line-height: 1;
+  padding: 6px 9px;
+  background: -webkit-linear-gradient(top, #e60000 0%, #b30000 100%);
+  background: -moz-linear-gradient(top, #e60000 0%, #b30000 100%);
+  background: -o-linear-gradient(top, #e60000 0%, #b30000 100%);
+  background: linear-gradient(top, #e60000 0%, #b30000 100%);
+  border-radius: 5px;
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 1px rgba(255, 255, 255, 0.33) inset;
+}
+main table th, main table td {
+  padding: 10px;
+}
+
+footer {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  opacity: 0.6;
+}
