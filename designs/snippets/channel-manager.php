@@ -1,6 +1,5 @@
 <?php
-	require_once __DIR__ . '/../../PHP Lib/api.php';
-	Auth::authenticate();
+	require 'header.php';
 	
 	function printChannels($channels)
 	{
@@ -15,10 +14,32 @@
 	}
 	
 	$removeError = '';
+	$createError = '';
 	if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['formID']))
 	{
 		switch($_POST['formID'])
 		{
+			case 'createChannel':
+				try
+				{
+					//TODO: Need to add permissions checks!
+					TrackedChannelDataHelper::addTrackedChannel($_POST['channelName']);
+				}
+				catch(Exception $ex)
+				{
+					switch($ex->getCode())
+					{
+						case 1:
+							$createError = $ex->getMessage();
+						break;
+						case 1062:
+							$createError = $_POST['channelName'] . ' already in tracked channels';
+						break;
+						default:
+						$createError = $ex->getCode() . ' ' . $ex->getMessage();
+					}
+				}
+			break;
 			case 'removeChannel':
 				try
 				{
@@ -48,7 +69,6 @@
 	
 	$trackedChannels = TrackedChannelDataHelper::getTrackedChannels();
 ?>
-<script type="text/javascript" src="../../JS Lib/tools.js"> </script>
 <script type="text/javascript">
 	function removeChannel(id, button)
 	{
@@ -60,6 +80,9 @@
 </script>
 <section class="channel-manager">
 	<h2>Channel Manager</h2>
+	<?php require 'channel-add.php'; ?>
+	<section class="view">
+	<h3>Channels</h3>
 	<p>Click a channel's button to have it be removed from future reports.</p>
 	<?php if($removeError != '') echo '<p class="error-text">' . $removeError . '</p>'; ?>
 	<form id="removeChannel" method="POST">
@@ -123,4 +146,6 @@
 			</tbody>
 		</table>
 	</form>
+	</section>
 </section>
+<?php require 'footer.php' ?>
